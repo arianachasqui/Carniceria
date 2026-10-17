@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Carnicería</title>
-<meta name="theme-color" content="#5b0f1b">
+<title>Carnicos Nuevo Amanecer</title>
+<meta name="theme-color" content="#141414">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Carnicería">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Nuevo Amanecer">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
 <style>
-:root{--vino:#5b0f1b;--vino2:#3a0911;--rojo:#8c1c2c;--oro:#c9a24b;--oro2:#e8d29a;--marfil:#faf5e9;--marfil2:#f0e7d0;--tinta:#2a1214;--suave:#6e5453;--linea:#e2d4b2;--verde:#3c6e47;--sangre:#8c1c2c;--carbon:#3a0911;--hueso:#faf5e9;--hueso-osc:#f0e7d0;--carbon-suave:#6e5453;--font:'Cormorant Garamond',Georgia,'Times New Roman',serif}
+:root{--vino:#141414;--vino2:#0b0b0b;--rojo:#3d3d3d;--oro:#c9a24b;--oro2:#e8d29a;--marfil:#f3f2ef;--marfil2:#e5e4e0;--tinta:#161616;--suave:#6b6b6b;--linea:#d9d7d0;--verde:#7a5c10;--sangre:#3d3d3d;--carbon:#0b0b0b;--hueso:#f3f2ef;--hueso-osc:#e5e4e0;--carbon-suave:#6b6b6b;--font:'Cormorant Garamond',Georgia,'Times New Roman',serif}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--marfil);color:var(--tinta);font:15px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
-.mast{background:linear-gradient(160deg,var(--vino2),var(--vino) 60%,var(--rojo));text-align:center;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px 18px;border-bottom:3px solid var(--oro)}
-.mast h1{font:700 34px/1 var(--font);margin:0;color:var(--oro2);letter-spacing:.06em}
+.mast{background:linear-gradient(160deg,#050505,#141414 55%,#2e2e2e);text-align:center;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px 18px;border-bottom:3px solid var(--oro)}
+.mast h1{font:700 clamp(25px,7.2vw,36px)/1.1 var(--font);margin:0;color:var(--oro2);letter-spacing:.06em}
 .mast p{margin:6px 0 0;color:#e9d9b6;font-size:13px;letter-spacing:.04em}
 .mast .mk{color:var(--oro);font-size:14px;margin-bottom:6px}
 .tabs{position:sticky;top:0;z-index:20;display:flex;gap:2px;overflow-x:auto;background:var(--marfil);border-bottom:1px solid var(--linea);padding:0 8px;scrollbar-width:none}
@@ -50,14 +50,14 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
 .stat{background:var(--vino);color:var(--marfil);border-radius:10px;padding:16px;border:1px solid var(--oro)}
 .stat .label{font-size:12px;color:#e3cf9f;margin-bottom:4px}.stat .val{font:700 28px var(--font);color:var(--oro2)}
 .stat.oro{background:linear-gradient(180deg,#dcb865,var(--oro));border-color:#a8832f}.stat.oro .label{color:var(--vino)}.stat.oro .val{color:var(--vino2)}
-.stat.rojo{background:var(--rojo)}.stat.verde{background:var(--verde)}
+.stat.rojo{background:#3d3d3d}.stat.verde{background:#2a2a2a;border-color:var(--oro)}.stat.verde .val{color:var(--oro2)}
 .month-select{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.month-select select{width:auto;min-width:170px}
 .semanas-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .semana-btn{padding:7px 14px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--marfil2);color:var(--suave)}
 .semana-btn.active{background:var(--vino);color:var(--oro2)}.semana-btn .rango{margin-left:4px;font-weight:400}
 .cliente-tag,.metodo-tag{display:inline-block;background:var(--marfil2);padding:2px 9px;border-radius:10px;font-size:12px}
 .estado-tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700}
-.estado-tag.pagado{background:#e0efe2;color:var(--verde)}.estado-tag.pendiente{background:#f6dede;color:var(--rojo)}.estado-tag.abono{background:#f7ecc9;color:#8a6a14}
+.estado-tag.pagado{background:#f1e6c0;color:#7a5c10}.estado-tag.pendiente{background:#141414;color:#e8d29a}.estado-tag.abono{background:#dcdcdc;color:#333}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1.5px solid var(--linea);background:var(--marfil);color:var(--tinta);padding:10px 16px;border-radius:22px;font-size:15px;cursor:pointer}
 .chip.on{background:var(--vino);color:var(--oro2);border-color:var(--oro)}
@@ -73,7 +73,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
 .prod:active{border-color:var(--oro)}.prod b{font:700 16px/1.1 var(--font);color:var(--vino);margin-top:4px}.prod span{font-size:13px;color:var(--suave)}
 .prod .bd{position:absolute;top:4px;right:4px;z-index:2;background:var(--oro);color:var(--vino2);font:700 12px system-ui;padding:2px 7px;border-radius:10px}
 #sheet{display:none}#sheet.on{display:block}
-.back{position:fixed;inset:0;background:rgba(40,6,12,.62);z-index:50}
+.back{position:fixed;inset:0;background:rgba(10,10,10,.68);z-index:50}
 .hoja{position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--marfil);border-radius:18px 18px 0 0;border-top:3px solid var(--oro);padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px);max-height:92vh;overflow-y:auto;max-width:640px;margin:0 auto;animation:sube .18s ease-out}
 @keyframes sube{from{transform:translateY(40px);opacity:0}}
 .hh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.hh h3,.hoja h3{font:700 26px var(--font);color:var(--vino);margin:0}
@@ -91,6 +91,9 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
 #toast.on{opacity:1}
 .ph{display:flex;gap:14px;align-items:center}.ph .pimg{width:96px;flex:none}
 @media(prefers-reduced-motion:reduce){.hoja{animation:none}}
+
+.gfijos{display:grid;grid-template-columns:1fr 1fr;gap:10px}.gfijos .chip{padding:16px 10px;font:700 20px var(--font);text-align:center;border-radius:12px}
+.el{display:grid;grid-template-columns:1fr 62px 84px 26px;gap:6px;margin-bottom:8px;align-items:center}.el select,.el input{padding:10px 6px;font-size:15px}
 </style></head>
 <body><div id="app-root"></div><div id="sheet"></div><div id="toast"></div>
 <script>
@@ -127,7 +130,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
     const f=/COSTILLA/.test(n)?`<rect x="18" y="30" width="64" height="40" rx="9" fill="${c}"/><path d="M30 34v32M44 34v32M58 34v32M72 34v32" stroke="#f3e6c4" stroke-width="4" stroke-linecap="round"/>`
     :/MOLID/.test(n)?`<path d="M14 74Q18 36 50 32Q82 36 86 74Z" fill="${c}"/><g fill="#ffffff55"><circle cx="38" cy="60" r="3"/><circle cx="56" cy="52" r="3"/><circle cx="66" cy="64" r="3"/><circle cx="48" cy="68" r="3"/></g>`
     :`<path d="M16 52Q14 28 46 26Q84 22 86 52Q88 76 52 76Q18 78 16 52Z" fill="${c}"/><circle cx="64" cy="48" r="9" fill="#f3e6c4"/><path d="M28 44Q40 38 50 46M30 58Q44 52 54 60" stroke="#ffffff66" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-    return`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#4a0c17"/><rect x="4" y="4" width="92" height="92" rx="8" fill="none" stroke="#c9a24b" stroke-width="1.2"/>${f}</svg>`}
+    return`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#1a1a1a"/><rect x="4" y="4" width="92" height="92" rx="8" fill="none" stroke="#c9a24b" stroke-width="1.2"/>${f}</svg>`}
   const pimg=p=>p.img?`<img src="${p.img}" alt="">`:ilus(p.nombre);
 
   // ---------- Hojas (ventanas inferiores) ----------
@@ -190,7 +193,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
       <label>Fecha</label><input type="date" id="fe" value="${v.fecha}">
       <button class="btn oro full" id="ok">Registrar venta</button></div>
       <div class="card"><h2>Últimas ventas</h2>${vis.length?vis.map(g=>{const t=g.items.reduce((s,i)=>s+i.libras*i.precioLibra,0),pg=g.items.reduce((s,i)=>s+montoPagadoVenta(i),0),st=pg>=t-.004?'pagado':pg>.004?'abono':'pendiente';
-        return`<div class="linea" style="cursor:default"><div class="t"><b>${esc(g.cliente)}</b> <span style="display:inline">· ${fechaCorta(g.fecha)}</span><span>${g.items.map(i=>esc(i.tipo)+' '+fmt(i.libras)+' lb').join(' · ')}</span></div><div style="text-align:right"><b class="m">${money(t)}</b><br><span class="estado-tag ${st}">${st==='pagado'?'Pagó':st==='abono'?'Abonó':'Debe'}</span></div><span class="del" data-dg="${esc(g.key)}">✕</span></div>`}).join('')+(grupos.length>vis.length?`<button class="btn secundario full" id="mas">Ver más (${grupos.length-vis.length})</button>`:''):'<div class="empty">Sin ventas todavía.</div>'}</div>`;
+        return`<div class="linea" style="cursor:default"><div class="t"><b>${esc(g.cliente)}</b> <span style="display:inline">· ${fechaCorta(g.fecha)}</span><span>${g.items.map(i=>esc(i.tipo)+' '+fmt(i.libras)+' lb').join(' · ')}</span></div><div style="text-align:right"><b class="m">${money(t)}</b><br><span class="estado-tag ${st}">${st==='pagado'?'Pagó':st==='abono'?'Abonó':'Debe'}</span></div><span class="del" data-eg="${esc(g.key)}">✎</span><span class="del" data-dg="${esc(g.key)}">✕</span></div>`}).join('')+(grupos.length>vis.length?`<button class="btn secundario full" id="mas">Ver más (${grupos.length-vis.length})</button>`:''):'<div class="empty">Sin ventas todavía.</div>'}</div>`;
     p.querySelectorAll('[data-cl]').forEach(b=>b.onclick=()=>{v.cliente=v.cliente===b.dataset.cl?'':b.dataset.cl;renderVentas()});
     p.querySelector('#nc').onclick=()=>{const s=hoja(`<h3>Nuevo cliente</h3><label>Nombre</label><input id="n" autocomplete="off"><button class="btn oro full" id="g">Usar este cliente</button>`);const i=s.querySelector('#n');setTimeout(()=>i.focus(),50);s.querySelector('#g').onclick=()=>{const n=i.value.trim().toUpperCase();if(!n){toast('Escribe el nombre');return}v.cliente=n;cerrar()}};
     p.querySelector('#add').onclick=()=>catalogo('venta');bindItems(p);
@@ -205,6 +208,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
       await guardarVentas();toast(v.debe?'Venta guardada · queda en Deudores':'✓ Venta registrada');
       cart.venta={items:[],cliente:'',metodo:v.metodo,debe:false,fecha:hoyStr()};render();
     };
+    p.querySelectorAll('[data-eg]').forEach(b=>b.onclick=()=>editarVenta(b.dataset.eg));
     p.querySelectorAll('[data-dg]').forEach(b=>b.onclick=async()=>{if(!confirm('¿Borrar esta venta?'))return;const k=b.dataset.dg;ventas=ventas.filter(x=>claveGrupoVenta(x)!==k);await guardarVentas();render()});
     const m=p.querySelector('#mas');if(m)m.onclick=()=>{ventasVis+=15;renderVentas()};
   }
@@ -285,10 +289,72 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
     if(id)s.querySelector('#d').onclick=()=>{if(!confirm('¿Eliminar '+x.nombre+' del catálogo? Tus ventas e historial no se borran.'))return;productos=productos.filter(p=>p.id!==id);guardarProd();cerrar()};
   }
 
+
+  // ---------- Editar venta (lápiz) ----------
+  function editarVenta(k){
+    const g=agruparVentas(ventas).find(x=>x.key===k);if(!g)return;
+    const tot0=g.items.reduce((s,i)=>s+i.libras*i.precioLibra,0),pg0=g.items.reduce((s,i)=>s+montoPagadoVenta(i),0);
+    const est0=pg0>=tot0-.004?'pagado':pg0>.004?'abono':'debe';
+    let L=g.items.map(i=>({tipo:i.tipo,libras:i.libras,precio:i.precioLibra})),est=est0,cli=g.cliente,met=g.items[0].metodoPago||'efectivo',fe=g.fecha;
+    const clientes=[...new Set(ventas.map(v=>v.cliente))].sort(),nombres=()=>[...new Set([...productos.map(p=>p.nombre),...L.map(l=>l.tipo)])];
+    const pintar=()=>{
+      const opts=[['pagado','Pagó'],['debe','Queda debiendo'],...(est0==='abono'?[['abono','Abonó (igual)']]:[])];
+      const s=hoja(`<div class="hh"><h3>Editar venta</h3><button class="x" data-c>✕</button></div>
+        <label style="margin-top:0">Cliente</label><select id="ec">${clientes.map(c=>`<option ${c===cli?'selected':''}>${esc(c)}</option>`).join('')}</select>
+        <label>Productos</label>${L.map((l,n)=>`<div class="el"><select data-t="${n}">${nombres().map(t=>`<option ${t===l.tipo?'selected':''}>${esc(t)}</option>`).join('')}</select><input data-l="${n}" type="number" inputmode="decimal" value="${l.libras}"><input data-p="${n}" type="number" inputmode="numeric" value="${l.precio}"><span class="del" data-r="${n}">✕</span></div>`).join('')}
+        <div class="helptext">Producto · libras · precio por libra</div>
+        <button class="btn secundario full" id="al">＋ Agregar línea</button>
+        <label>Pago</label><div class="seg" style="grid-template-columns:repeat(${opts.length},1fr)">${opts.map(([v,t])=>`<button data-e="${v}" class="${est===v?'on':''}">${t}</button>`).join('')}</div>
+        <label>Forma de pago</label><div class="seg"><button data-m="efectivo" class="${met==='efectivo'?'on':''}">Efectivo</button><button data-m="transferencia" class="${met==='transferencia'?'on':''}">Transferencia</button></div>
+        <label>Fecha</label><input type="date" id="ef" value="${fe}">
+        <div class="total"><span>Total</span><span>${money(L.reduce((a,l)=>a+l.libras*l.precio,0))}</span></div>
+        <button class="btn oro full" id="gu">Guardar cambios</button><button class="btn secundario full" data-c>Cancelar</button>`);
+      s.querySelector('#ec').onchange=e=>{cli=e.target.value};s.querySelector('#ef').onchange=e=>{fe=e.target.value};
+      s.querySelectorAll('[data-t]').forEach(e=>e.onchange=()=>{L[e.dataset.t].tipo=e.value});
+      s.querySelectorAll('[data-l]').forEach(e=>e.onchange=()=>{L[e.dataset.l].libras=num(e.value);pintar()});
+      s.querySelectorAll('[data-p]').forEach(e=>e.onchange=()=>{L[e.dataset.p].precio=num(e.value);pintar()});
+      s.querySelectorAll('[data-r]').forEach(e=>e.onclick=()=>{if(L.length<2)return toast('Debe quedar un producto');L.splice(e.dataset.r,1);pintar()});
+      s.querySelector('#al').onclick=()=>{const p=productos[0];L.push({tipo:p?p.nombre:'',libras:1,precio:p?p.precio:0});pintar()};
+      s.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>{est=e.dataset.e;pintar()});
+      s.querySelectorAll('[data-m]').forEach(e=>e.onclick=()=>{met=e.dataset.m;pintar()});
+      s.querySelector('#gu').onclick=async()=>{
+        const ls=L.filter(l=>l.libras>0&&l.tipo);if(!ls.length)return toast('Pon libras en al menos un producto');
+        const total=ls.reduce((a,l)=>a+l.libras*l.precio,0),gid=g.items[0].grupoId||uid(),ab=Math.min(pg0,total);
+        ventas=ventas.filter(v=>claveGrupoVenta(v)!==k);
+        ls.forEach(l=>{const t=l.libras*l.precio,pg=est==='pagado'?t:est==='debe'?0:(total>0?t*ab/total:0);ventas.push({id:uid(),grupoId:gid,fecha:fe||g.fecha,cliente:cli,tipo:l.tipo,libras:l.libras,precioLibra:l.precio,metodoPago:met,montoPagado:pg,pagado:pg>=t-.004})});
+        await guardarVentas();toast('✓ Venta actualizada');cerrar();
+      };
+    };
+    pintar();
+  }
+
+  // ---------- Gastos ----------
+  const GFIJOS=[['INDRIVER',/INDRIVER/i],['DIEZMO',/DIEZMO/i],['SPOTIFY',/SPOT/i],['SUELDO',/SUELDO/i]],gs={concepto:'',monto:'',fecha:hoyStr(),otro:''};
+  function renderGastos(){
+    const p=document.getElementById('panel-gastos'),ord=[...gastos].sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    p.innerHTML=`<div class="card"><h2>Anotar gasto</h2>
+      <div class="gfijos">${GFIJOS.map(([n])=>`<button class="chip ${gs.concepto===n?'on':''}" data-g="${n}">${n[0]+n.slice(1).toLowerCase()}</button>`).join('')}</div>
+      <label>Otro gasto</label><input id="go" placeholder="Escribe el concepto" value="${esc(gs.otro)}" autocomplete="off">
+      <label>Monto</label><input id="gm" type="number" inputmode="numeric" placeholder="0" value="${gs.monto}">
+      <label>Fecha</label><input type="date" id="gf" value="${gs.fecha}">
+      <button class="btn oro full" id="gok">Guardar gasto</button></div>
+      <div class="card"><h2>Historial de gastos</h2>${ord.length?`<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th></th></tr></thead><tbody>${ord.slice(0,60).map(x=>`<tr><td>${fechaCorta(x.fecha)}</td><td>${esc(x.concepto)}</td><td class="num">${money(x.monto)}</td><td><span class="del" data-dx="${x.id}">✕</span></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Aún no hay gastos.</div>'}</div>`;
+    p.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const n=b.dataset.g;if(gs.concepto===n){gs.concepto='';}else{gs.concepto=n;gs.otro='';const u=ord.find(x=>GFIJOS.find(f=>f[0]===n)[1].test(x.concepto));gs.monto=u?u.monto:''}renderGastos()});
+    p.querySelector('#go').oninput=e=>{gs.otro=e.target.value;gs.concepto='';p.querySelectorAll('[data-g]').forEach(c=>c.classList.remove('on'))};
+    p.querySelector('#gm').oninput=e=>{gs.monto=e.target.value};p.querySelector('#gf').onchange=e=>{gs.fecha=e.target.value};
+    p.querySelector('#gok').onclick=async()=>{
+      const concepto=gs.concepto||gs.otro.trim().toUpperCase(),monto=num(gs.monto);
+      if(!concepto)return toast('Elige un gasto o escribe uno');if(monto<=0)return toast('Pon el monto');
+      gastos.push({id:uid(),fecha:gs.fecha||hoyStr(),concepto,monto});await guardarGastos();
+      gs.concepto='';gs.otro='';gs.monto='';toast('✓ Gasto guardado');render();
+    };
+    p.querySelectorAll('[data-dx]').forEach(b=>b.onclick=async()=>{if(!confirm('¿Borrar este gasto?'))return;gastos=gastos.filter(x=>x.id!==b.dataset.dx);await guardarGastos();render()});
+  }
+
   // ---------- Estructura general ----------
   function render(){
     const y=window.scrollY,nd=Object.keys(cuentasPorCobrar()).length;
-    root.innerHTML=`<header class="mast"><div class="mk">✦ ✦ ✦</div><h1>Carnicería</h1><p>Ventas, compras y deudas</p></header>
+    root.innerHTML=`<header class="mast"><div class="mk">✦ ✦ ✦</div><h1>Carnicos Nuevo Amanecer</h1><p>Ventas, compras y deudas</p></header>
       <nav class="tabs">${TABS.map(([k,l])=>`<div class="tab ${k===activeTab?'active':''}" data-tab="${k}">${l}${k==='deudores'&&nd?`<b>${nd}</b>`:''}</div>`).join('')}</nav>
       <div class="wrap">${TABS.map(([k])=>`<div id="panel-${k}" class="panel ${k===activeTab?'active':''}"></div>`).join('')}</div>`;
     root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{activeTab=t.dataset.tab;render();window.scrollTo(0,0)});
@@ -1701,54 +1767,6 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
     `;
   }
 
-  // ---------- Panel Gastos ----------
-  function renderGastos(){
-    const p = document.getElementById('panel-gastos');
-    const scrollVentanaAnterior = window.scrollY;
-    const hoy = new Date().toISOString().slice(0,10);
-    const ordenados = [...gastos].sort((a,b)=> b.fecha.localeCompare(a.fecha));
-    p.innerHTML = `
-      <div class="card">
-        <h2>Anotar gasto</h2>
-        <div class="grid">
-          <div><label>Fecha</label><input type="date" id="in-gfecha" value="${hoy}"></div>
-          <div><label>Concepto</label><input type="text" id="in-gconcepto" placeholder="Ej: Servicios, transporte, empaques"></div>
-          <div><label>Monto</label><input type="number" step="0.01" min="0" id="in-gmonto" placeholder="0.00"></div>
-        </div>
-        <div class="btn-row"><button class="btn" id="btn-guardar-gasto">Guardar gasto</button></div>
-        <div class="save-msg" id="msg-gasto"></div>
-      </div>
-      <div class="card">
-        <h2>Historial de gastos</h2>
-        ${ordenados.length===0 ? '<div class="empty">Aún no hay gastos registrados.</div>' : `
-        <div style="overflow-x:auto;"><table>
-          <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th></th></tr></thead>
-          <tbody>${ordenados.map(g=>`<tr><td>${g.fecha}</td><td>${g.concepto}</td><td class="num">${money(g.monto)}</td><td class="num"><span class="del" data-del-gasto="${g.id}">✕</span></td></tr>`).join('')}</tbody>
-        </table></div>`}
-      </div>
-    `;
-    requestAnimationFrame(()=> window.scrollTo(0, scrollVentanaAnterior));
-    document.getElementById('btn-guardar-gasto').addEventListener('click', async ()=>{
-      const fecha = document.getElementById('in-gfecha').value;
-      const concepto = document.getElementById('in-gconcepto').value.trim();
-      const monto = parseFloat(document.getElementById('in-gmonto').value) || 0;
-      if(!fecha || !concepto){ flashMsg('msg-gasto','Falta la fecha o el concepto.'); return; }
-      gastos.push({ id: uid(), fecha, concepto, monto });
-      await guardarGastos();
-      render();
-      activeTab = 'gastos';
-      document.querySelector('[data-tab="gastos"]').classList.add('active');
-      flashMsg('msg-gasto', 'Gasto guardado.');
-    });
-    document.querySelectorAll('.del[data-del-gasto]').forEach(el=>{
-      el.addEventListener('click', async ()=>{
-        gastos = gastos.filter(g => g.id !== el.dataset.delGasto);
-        await guardarGastos();
-        render();
-      });
-    });
-  }
-
   // ---------- Panel Resumen Mensual ----------
   function renderResumen(){
     const p = document.getElementById('panel-resumen');
@@ -1806,7 +1824,7 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
         <h2>Cómo cobraste este mes</h2>
         <div class="stat-grid">
           <div class="stat"><div class="label">Efectivo</div><div class="val">${money(r.totalEfectivo)}</div></div>
-          <div class="stat" style="background:#2b4d78;"><div class="label">Transferencia</div><div class="val">${money(r.totalTransferencia)}</div></div>
+          <div class="stat" style="background:#4a4a4a;"><div class="label">Transferencia</div><div class="val">${money(r.totalTransferencia)}</div></div>
           <div class="stat rojo"><div class="label">Pendiente por cobrar</div><div class="val">${money(r.totalPendiente)}</div></div>
         </div>
       </div>
@@ -1913,14 +1931,14 @@ td{padding:9px 10px;border-bottom:1px solid var(--linea)}
     }
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    const rojo = [91,15,27];
-    const carbon = [58,9,17];
+    const rojo = [20,20,20];
+    const carbon = [60,60,60];
     let y = 18;
 
     doc.setFont('helvetica','bold');
     doc.setFontSize(18);
     doc.setTextColor(...rojo);
-    doc.text('Control de Carnicería', 14, y);
+    doc.text('Carnicos Nuevo Amanecer', 14, y);
     y += 7;
     doc.setFontSize(12);
     doc.setTextColor(...carbon);
