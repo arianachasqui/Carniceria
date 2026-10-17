@@ -1,0 +1,2021 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carnicería</title>
+<meta name="theme-color" content="#5b0f1b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Carnicería">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+<style>
+:root{--vino:#5b0f1b;--vino2:#3a0911;--rojo:#8c1c2c;--oro:#c9a24b;--oro2:#e8d29a;--marfil:#faf5e9;--marfil2:#f0e7d0;--tinta:#2a1214;--suave:#6e5453;--linea:#e2d4b2;--verde:#3c6e47;--sangre:#8c1c2c;--carbon:#3a0911;--hueso:#faf5e9;--hueso-osc:#f0e7d0;--carbon-suave:#6e5453;--font:'Cormorant Garamond',Georgia,'Times New Roman',serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--marfil);color:var(--tinta);font:15px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+.mast{background:linear-gradient(160deg,var(--vino2),var(--vino) 60%,var(--rojo));text-align:center;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px 18px;border-bottom:3px solid var(--oro)}
+.mast h1{font:700 34px/1 var(--font);margin:0;color:var(--oro2);letter-spacing:.06em}
+.mast p{margin:6px 0 0;color:#e9d9b6;font-size:13px;letter-spacing:.04em}
+.mast .mk{color:var(--oro);font-size:14px;margin-bottom:6px}
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:2px;overflow-x:auto;background:var(--marfil);border-bottom:1px solid var(--linea);padding:0 8px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:none;padding:14px 14px 11px;font:600 18px var(--font);color:var(--suave);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.tab.active{color:var(--vino);border-bottom-color:var(--oro)}
+.tab b{background:var(--rojo);color:#fff;border-radius:9px;font:700 11px system-ui;padding:1px 6px;margin-left:5px;vertical-align:2px}
+.wrap{max-width:900px;margin:0 auto;padding:18px 14px calc(env(safe-area-inset-bottom,0px) + 70px)}
+.panel{display:none}.panel.active{display:block}
+.card{background:#fff;border:1px solid var(--linea);border-radius:10px;padding:18px;margin-bottom:16px;box-shadow:0 1px 0 var(--oro2)}
+.card h2{font:700 24px var(--font);color:var(--vino);margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--oro)}
+label{display:block;font-size:12px;font-weight:600;color:var(--suave);margin:12px 0 5px;letter-spacing:.03em}
+input,select{width:100%;padding:12px;border:1.5px solid var(--linea);border-radius:8px;font-size:16px;background:var(--marfil);color:var(--tinta)}
+input:focus,select:focus{outline:none;border-color:var(--oro)}
+button{font-family:inherit}
+.btn{background:var(--vino);color:var(--oro2);border:1px solid var(--oro);padding:12px 20px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;letter-spacing:.03em}
+.btn:active{background:var(--vino2)}
+.btn.oro{background:linear-gradient(180deg,#dcb865,var(--oro));color:var(--vino2);border-color:#a8832f}
+.btn.secundario{background:transparent;color:var(--vino);border:1.5px solid var(--oro)}
+.btn.peq{padding:7px 12px;font-size:13px}.btn.full{display:block;width:100%;margin-top:10px}
+.btn-row{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.helptext{font-size:12.5px;color:var(--suave)}
+.empty{text-align:center;padding:26px 10px;color:var(--suave)}
+.save-msg{font-size:13px;color:var(--verde);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;padding:9px 10px;background:var(--vino);color:var(--oro2);font-size:12px;letter-spacing:.04em}
+td{padding:9px 10px;border-bottom:1px solid var(--linea)}
+.num{text-align:right;font-variant-numeric:tabular-nums}.pos{color:var(--verde);font-weight:700}.neg{color:var(--rojo);font-weight:700}
+.del{cursor:pointer;color:var(--suave);font-size:18px;padding:4px 8px}.del:hover{color:var(--rojo)}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--vino);color:var(--marfil);border-radius:10px;padding:16px;border:1px solid var(--oro)}
+.stat .label{font-size:12px;color:#e3cf9f;margin-bottom:4px}.stat .val{font:700 28px var(--font);color:var(--oro2)}
+.stat.oro{background:linear-gradient(180deg,#dcb865,var(--oro));border-color:#a8832f}.stat.oro .label{color:var(--vino)}.stat.oro .val{color:var(--vino2)}
+.stat.rojo{background:var(--rojo)}.stat.verde{background:var(--verde)}
+.month-select{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.month-select select{width:auto;min-width:170px}
+.semanas-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.semana-btn{padding:7px 14px;border-radius:16px;font-size:13px;font-weight:600;cursor:pointer;background:var(--marfil2);color:var(--suave)}
+.semana-btn.active{background:var(--vino);color:var(--oro2)}.semana-btn .rango{margin-left:4px;font-weight:400}
+.cliente-tag,.metodo-tag{display:inline-block;background:var(--marfil2);padding:2px 9px;border-radius:10px;font-size:12px}
+.estado-tag{display:inline-block;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700}
+.estado-tag.pagado{background:#e0efe2;color:var(--verde)}.estado-tag.pendiente{background:#f6dede;color:var(--rojo)}.estado-tag.abono{background:#f7ecc9;color:#8a6a14}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--linea);background:var(--marfil);color:var(--tinta);padding:10px 16px;border-radius:22px;font-size:15px;cursor:pointer}
+.chip.on{background:var(--vino);color:var(--oro2);border-color:var(--oro)}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--oro);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:var(--marfil);padding:13px 8px;font-size:15px;font-weight:600;color:var(--suave);cursor:pointer}
+.seg button.on{background:var(--vino);color:var(--oro2)}.seg button.on.mal{background:var(--rojo)}
+.linea{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--linea);cursor:pointer}
+.linea .pimg{width:52px;height:52px;flex:none}.linea .t{flex:1}.linea .t span{display:block;font-size:13px;color:var(--suave)}.linea b.m{font:700 20px var(--font);color:var(--vino)}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 2px;font:700 26px var(--font);color:var(--vino)}
+.pimg{border-radius:10px;overflow:hidden;background:var(--vino);border:1px solid var(--oro);aspect-ratio:1}.pimg img,.pimg svg{width:100%;height:100%;object-fit:cover;display:block}
+.gp{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:6px}
+.prod{position:relative;background:#fff;border:1px solid var(--linea);border-radius:12px;padding:8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.prod:active{border-color:var(--oro)}.prod b{font:700 16px/1.1 var(--font);color:var(--vino);margin-top:4px}.prod span{font-size:13px;color:var(--suave)}
+.prod .bd{position:absolute;top:4px;right:4px;z-index:2;background:var(--oro);color:var(--vino2);font:700 12px system-ui;padding:2px 7px;border-radius:10px}
+#sheet{display:none}#sheet.on{display:block}
+.back{position:fixed;inset:0;background:rgba(40,6,12,.62);z-index:50}
+.hoja{position:fixed;left:0;right:0;bottom:0;z-index:51;background:var(--marfil);border-radius:18px 18px 0 0;border-top:3px solid var(--oro);padding:16px 16px calc(env(safe-area-inset-bottom,0px) + 18px);max-height:92vh;overflow-y:auto;max-width:640px;margin:0 auto;animation:sube .18s ease-out}
+@keyframes sube{from{transform:translateY(40px);opacity:0}}
+.hh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.hh h3,.hoja h3{font:700 26px var(--font);color:var(--vino);margin:0}
+.x{border:0;background:none;font-size:22px;color:var(--suave);cursor:pointer;padding:4px 8px}
+.qv{text-align:center}.qv .pimg{width:110px;margin:0 auto 8px}
+.stepper{display:flex;gap:10px;align-items:center;justify-content:center;margin:10px 0 2px}
+.stepper button{width:62px;height:62px;border-radius:50%;border:1.5px solid var(--oro);background:var(--vino);color:var(--oro2);font-size:30px;cursor:pointer}
+.stepper input{width:130px;text-align:center;font:700 40px var(--font);padding:4px;border-color:var(--oro)}
+.qv .chips{justify-content:center;margin:12px 0}.qv .sub{font:700 24px var(--font);color:var(--vino);margin:10px 0}
+.qv label{text-align:left}
+.sep{text-align:center;color:var(--suave);font-size:13px;margin:16px 0 10px}
+.deuda{display:flex;justify-content:space-between;align-items:center;padding:14px 4px;border-bottom:1px solid var(--linea);cursor:pointer}
+.deuda b{font:700 22px var(--font);color:var(--vino)}.deuda span{font-size:13px;color:var(--suave);display:block}.deuda .neg{font:700 24px var(--font)}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--vino2);color:var(--oro2);border:1px solid var(--oro);padding:10px 18px;border-radius:22px;z-index:99;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.on{opacity:1}
+.ph{display:flex;gap:14px;align-items:center}.ph .pimg{width:96px;flex:none}
+@media(prefers-reduced-motion:reduce){.hoja{animation:none}}
+</style></head>
+<body><div id="app-root"></div><div id="sheet"></div><div id="toast"></div>
+<script>
+(function(){
+  const KEY_COMPRAS="carniceria-compras-v2",KEY_VENTAS="carniceria-ventas-v2",KEY_GASTOS="carniceria-gastos",KEY_OLD_REGISTROS="carniceria-registros",KEY_PROD="carniceria-productos-v1";
+  let compras=[],ventas=[],gastos=[],productos=[];
+  let activeTab="ventas",mesResumenActual=null,semanaResumenActual=null,ventasVis=15,comprasVis=20;
+  const root=document.getElementById('app-root');
+  const TABS=[['ventas','Ventas'],['deudores','Deudores'],['compras','Compras'],['inventario','Inventario'],['gastos','Gastos'],['resumen','Resumen'],['catalogo','Catálogo']];
+  const hoyStr=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+  const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  const fmt=n=>(isNaN(n)?0:n).toLocaleString('es-CO',{maximumFractionDigits:2});
+  const money=n=>"$"+Math.round(isNaN(n)?0:n).toLocaleString('es-CO');
+  const mesKey=f=>f?f.slice(0,7):"";
+  const num=v=>parseFloat(String(v).replace(',','.'))||0;
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  function mesLabel(k){if(!k)return"";const[y,m]=k.split('-');return["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m-1]+" "+y}
+  const fechaCorta=f=>{const[y,m,d]=f.split('-');return d+" "+["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"][m-1]};
+  const cart={venta:{items:[],cliente:'',metodo:'efectivo',debe:false,fecha:hoyStr()},compra:{items:[],fecha:hoyStr()}};
+  const sumCart=it=>it.reduce((s,i)=>s+i.libras*i.precio,0);
+
+  // ---------- Catálogo de productos ----------
+  async function iniciarProductos(){
+    try{productos=JSON.parse(localStorage.getItem(KEY_PROD)||'null')||null}catch(e){productos=null}
+    if(productos)return;
+    const m={},nm=t=>String(t).trim().toUpperCase(),get=k=>m[k]||(m[k]={nombre:k,precio:0,costo:0});
+    [...compras].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(c=>{get(nm(c.tipo)).costo=c.costoLibra});
+    [...ventas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(v=>{get(nm(v.tipo)).precio=v.precioLibra});
+    productos=Object.values(m).map(p=>({id:uid(),img:null,...p,precio:p.precio||Math.round(p.costo*1.3/500)*500})).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    guardarProd();
+  }
+  function guardarProd(){try{localStorage.setItem(KEY_PROD,JSON.stringify(productos))}catch(e){toast('No hay espacio para guardar la foto')}pedirSync()}
+  function ilus(n){n=n.toUpperCase();const c=/CERDO|LOMO|TOCINO|CHORIZO/.test(n)?'#d98f8f':/AHUMAD/.test(n)?'#7a3524':'#b02a37';
+    const f=/COSTILLA/.test(n)?`<rect x="18" y="30" width="64" height="40" rx="9" fill="${c}"/><path d="M30 34v32M44 34v32M58 34v32M72 34v32" stroke="#f3e6c4" stroke-width="4" stroke-linecap="round"/>`
+    :/MOLID/.test(n)?`<path d="M14 74Q18 36 50 32Q82 36 86 74Z" fill="${c}"/><g fill="#ffffff55"><circle cx="38" cy="60" r="3"/><circle cx="56" cy="52" r="3"/><circle cx="66" cy="64" r="3"/><circle cx="48" cy="68" r="3"/></g>`
+    :`<path d="M16 52Q14 28 46 26Q84 22 86 52Q88 76 52 76Q18 78 16 52Z" fill="${c}"/><circle cx="64" cy="48" r="9" fill="#f3e6c4"/><path d="M28 44Q40 38 50 46M30 58Q44 52 54 60" stroke="#ffffff66" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    return`<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="#4a0c17"/><rect x="4" y="4" width="92" height="92" rx="8" fill="none" stroke="#c9a24b" stroke-width="1.2"/>${f}</svg>`}
+  const pimg=p=>p.img?`<img src="${p.img}" alt="">`:ilus(p.nombre);
+
+  // ---------- Hojas (ventanas inferiores) ----------
+  function hoja(html){const s=document.getElementById('sheet');s.innerHTML=`<div class="back"></div><div class="hoja">${html}</div>`;s.classList.add('on');document.body.style.overflow='hidden';s.querySelector('.back').onclick=cerrar;s.querySelectorAll('[data-c]').forEach(b=>b.onclick=cerrar);return s}
+  function cerrar(){const s=document.getElementById('sheet');s.classList.remove('on');s.innerHTML='';document.body.style.overflow='';render()}
+  function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('on'),1800)}
+
+  function catalogo(ctx){
+    const items=cart[ctx].items,cnt=n=>items.filter(i=>i.tipo===n).reduce((s,i)=>s+i.libras,0);
+    const s=hoja(`<div class="hh"><h3>Elige un producto</h3><button class="x" data-c>✕</button></div>
+      <div class="gp">${productos.map(p=>`<button class="prod" data-p="${p.id}">${cnt(p.nombre)?`<i class="bd">${fmt(cnt(p.nombre))} lb</i>`:''}<div class="pimg">${pimg(p)}</div><b>${esc(p.nombre)}</b><span>${money(ctx==='venta'?p.precio:p.costo)}/lb</span></button>`).join('')||'<div class="empty">El catálogo está vacío. Crea productos en la pestaña Catálogo.</div>'}</div>
+      <button class="btn oro full" data-c>Listo${items.length?` (${items.length})`:''}</button>`);
+    s.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>cantidad(ctx,b.dataset.p,-1));
+  }
+
+  function cantidad(ctx,pid,idx){
+    const p=productos.find(x=>x.id===pid),it=cart[ctx].items,ex=idx>=0?it[idx]:null;
+    let q=ex?ex.libras:1;const pr0=ex?ex.precio:(ctx==='venta'?p.precio:p.costo);
+    const s=hoja(`<div class="qv"><div class="pimg">${pimg(p)}</div><h3>${esc(p.nombre)}</h3>
+      <div class="stepper"><button data-s="-0.5">−</button><input id="q" inputmode="decimal" value="${q}"><button data-s="0.5">+</button></div><div class="helptext">libras</div>
+      <div class="chips">${[0.5,1,2,3,5,10].map(v=>`<button class="chip" data-v="${v}">${v}</button>`).join('')}</div>
+      <label>Precio por libra</label><input id="pr" type="number" inputmode="numeric" value="${pr0}">
+      <div class="sub" id="st"></div>
+      <button class="btn oro full" id="ok">${ex?'Guardar cambios':'Agregar al pedido'}</button>
+      ${ex?'<button class="btn secundario full" id="rm">Quitar del pedido</button>':''}
+      <button class="btn secundario full" id="bk">${ex?'Cancelar':'Volver al catálogo'}</button></div>`);
+    const qi=s.querySelector('#q'),pi=s.querySelector('#pr'),st=s.querySelector('#st');
+    const calc=()=>{st.textContent='Subtotal: '+money(num(qi.value)*num(pi.value))};calc();
+    qi.oninput=pi.oninput=calc;
+    s.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{qi.value=Math.max(0,Math.round((num(qi.value)+parseFloat(b.dataset.s))*100)/100);calc()});
+    s.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{qi.value=b.dataset.v;calc()});
+    const volver=()=>ex?cerrar():catalogo(ctx);
+    s.querySelector('#bk').onclick=volver;
+    if(ex)s.querySelector('#rm').onclick=()=>{it.splice(idx,1);cerrar()};
+    s.querySelector('#ok').onclick=()=>{
+      const libras=num(qi.value),precio=num(pi.value);
+      if(libras<=0){toast('Pon las libras');return}
+      if(ex){ex.libras=libras;ex.precio=precio;cerrar();return}
+      const m=it.find(i=>i.tipo===p.nombre&&i.precio===precio);
+      if(m)m.libras+=libras;else it.push({tipo:p.nombre,libras,precio});
+      toast('✓ '+p.nombre+' agregado');catalogo(ctx);
+    };
+  }
+
+  const listaItems=ctx=>{const it=cart[ctx].items;return it.length?it.map((i,n)=>{const p=productos.find(x=>x.nombre===i.tipo)||{nombre:i.tipo};return`<div class="linea" data-e="${ctx}:${n}"><div class="pimg">${pimg(p)}</div><div class="t"><b>${esc(i.tipo)}</b><span>${fmt(i.libras)} lb × ${money(i.precio)}</span></div><b class="m">${money(i.libras*i.precio)}</b></div>`}).join('')+`<div class="total"><span>Total</span><span>${money(sumCart(it))}</span></div>`:'<div class="empty">Aún no hay productos en el pedido.</div>'};
+  function bindItems(p){p.querySelectorAll('[data-e]').forEach(e=>e.onclick=()=>{const[c,n]=e.dataset.e.split(':');const i=cart[c].items[n];cantidad(c,(productos.find(x=>x.nombre===i.tipo)||{id:''}).id,+n)})}
+
+  // ---------- Ventas ----------
+  function renderVentas(){
+    const p=document.getElementById('panel-ventas'),v=cart.venta;
+    const clientes=[...new Set([...ventas.map(x=>x.cliente),...(v.cliente?[v.cliente]:[])])].sort();
+    const grupos=agruparVentas(ventas).sort((a,b)=>b.fecha.localeCompare(a.fecha)),vis=grupos.slice(0,ventasVis);
+    p.innerHTML=`<div class="card"><h2>Nueva venta</h2>
+      <label style="margin-top:0">¿A quién le vendes?</label>
+      <div class="chips"><button class="chip" id="nc">＋ Nuevo</button>${clientes.map(c=>`<button class="chip ${c===v.cliente?'on':''}" data-cl="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <label>Productos</label>${listaItems('venta')}
+      <button class="btn secundario full" id="add">＋ Agregar producto</button>
+      <label>Forma de pago</label><div class="seg"><button data-m="efectivo" class="${v.metodo==='efectivo'?'on':''}">Efectivo</button><button data-m="transferencia" class="${v.metodo==='transferencia'?'on':''}">Transferencia</button></div>
+      <label>Estado</label><div class="seg"><button data-d="0" class="${!v.debe?'on':''}">Pagó</button><button data-d="1" class="${v.debe?'on mal':''}">Queda debiendo</button></div>
+      <label>Fecha</label><input type="date" id="fe" value="${v.fecha}">
+      <button class="btn oro full" id="ok">Registrar venta</button></div>
+      <div class="card"><h2>Últimas ventas</h2>${vis.length?vis.map(g=>{const t=g.items.reduce((s,i)=>s+i.libras*i.precioLibra,0),pg=g.items.reduce((s,i)=>s+montoPagadoVenta(i),0),st=pg>=t-.004?'pagado':pg>.004?'abono':'pendiente';
+        return`<div class="linea" style="cursor:default"><div class="t"><b>${esc(g.cliente)}</b> <span style="display:inline">· ${fechaCorta(g.fecha)}</span><span>${g.items.map(i=>esc(i.tipo)+' '+fmt(i.libras)+' lb').join(' · ')}</span></div><div style="text-align:right"><b class="m">${money(t)}</b><br><span class="estado-tag ${st}">${st==='pagado'?'Pagó':st==='abono'?'Abonó':'Debe'}</span></div><span class="del" data-dg="${esc(g.key)}">✕</span></div>`}).join('')+(grupos.length>vis.length?`<button class="btn secundario full" id="mas">Ver más (${grupos.length-vis.length})</button>`:''):'<div class="empty">Sin ventas todavía.</div>'}</div>`;
+    p.querySelectorAll('[data-cl]').forEach(b=>b.onclick=()=>{v.cliente=v.cliente===b.dataset.cl?'':b.dataset.cl;renderVentas()});
+    p.querySelector('#nc').onclick=()=>{const s=hoja(`<h3>Nuevo cliente</h3><label>Nombre</label><input id="n" autocomplete="off"><button class="btn oro full" id="g">Usar este cliente</button>`);const i=s.querySelector('#n');setTimeout(()=>i.focus(),50);s.querySelector('#g').onclick=()=>{const n=i.value.trim().toUpperCase();if(!n){toast('Escribe el nombre');return}v.cliente=n;cerrar()}};
+    p.querySelector('#add').onclick=()=>catalogo('venta');bindItems(p);
+    p.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{v.metodo=b.dataset.m;renderVentas()});
+    p.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{v.debe=b.dataset.d==='1';renderVentas()});
+    p.querySelector('#fe').onchange=e=>{v.fecha=e.target.value};
+    p.querySelector('#ok').onclick=async()=>{
+      if(!v.cliente)return toast('Elige un cliente');
+      if(!v.items.length)return toast('Agrega al menos un producto');
+      const grupoId=uid();
+      v.items.forEach(i=>{const tot=i.libras*i.precio,pg=v.debe?0:tot;ventas.push({id:uid(),grupoId,fecha:v.fecha||hoyStr(),cliente:v.cliente,tipo:i.tipo,libras:i.libras,precioLibra:i.precio,metodoPago:v.metodo,montoPagado:pg,pagado:!v.debe})});
+      await guardarVentas();toast(v.debe?'Venta guardada · queda en Deudores':'✓ Venta registrada');
+      cart.venta={items:[],cliente:'',metodo:v.metodo,debe:false,fecha:hoyStr()};render();
+    };
+    p.querySelectorAll('[data-dg]').forEach(b=>b.onclick=async()=>{if(!confirm('¿Borrar esta venta?'))return;const k=b.dataset.dg;ventas=ventas.filter(x=>claveGrupoVenta(x)!==k);await guardarVentas();render()});
+    const m=p.querySelector('#mas');if(m)m.onclick=()=>{ventasVis+=15;renderVentas()};
+  }
+
+  // ---------- Compras ----------
+  function renderCompras(){
+    const p=document.getElementById('panel-compras'),c=cart.compra,hist=[...compras].sort((a,b)=>b.fecha.localeCompare(a.fecha)),vis=hist.slice(0,comprasVis);
+    p.innerHTML=`<div class="card"><h2>Pedido de la semana</h2>
+      <label style="margin-top:0">Fecha</label><input type="date" id="fe" value="${c.fecha}">
+      <label>Productos comprados</label>${listaItems('compra')}
+      <button class="btn secundario full" id="add">＋ Agregar producto</button>
+      <button class="btn oro full" id="ok">Guardar compras</button></div>
+      <div class="card"><h2>Historial de compras</h2>${vis.length?`<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Carne</th><th>Libras</th><th>Total</th><th></th></tr></thead><tbody>${vis.map(x=>`<tr><td>${fechaCorta(x.fecha)}</td><td>${esc(x.tipo)}</td><td class="num">${fmt(x.libras)}</td><td class="num">${money(x.libras*x.costoLibra)}</td><td><span class="del" data-dc="${x.id}">✕</span></td></tr>`).join('')}</tbody></table></div>${hist.length>vis.length?`<button class="btn secundario full" id="mas">Ver más (${hist.length-vis.length})</button>`:''}`:'<div class="empty">Sin compras todavía.</div>'}</div>`;
+    p.querySelector('#fe').onchange=e=>{c.fecha=e.target.value};
+    p.querySelector('#add').onclick=()=>catalogo('compra');bindItems(p);
+    p.querySelector('#ok').onclick=async()=>{
+      if(!c.items.length)return toast('Agrega al menos un producto');
+      c.items.forEach(i=>compras.push({id:uid(),fecha:c.fecha||hoyStr(),tipo:i.tipo,libras:i.libras,costoLibra:i.precio}));
+      await guardarCompras();cart.compra={items:[],fecha:hoyStr()};toast('✓ Compras guardadas');render();
+    };
+    p.querySelectorAll('[data-dc]').forEach(b=>b.onclick=async()=>{if(!confirm('¿Borrar esta compra?'))return;compras=compras.filter(x=>x.id!==b.dataset.dc);await guardarCompras();render()});
+    const m=p.querySelector('#mas');if(m)m.onclick=()=>{comprasVis+=20;renderCompras()};
+  }
+
+  // ---------- Deudores ----------
+  function aplicarPago(cliente,monto){
+    let resta=monto;
+    ventas.filter(v=>v.cliente===cliente).sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(v=>{
+      const tot=v.libras*v.precioLibra,saldo=tot-montoPagadoVenta(v);if(saldo<=.004||resta<=0)return;
+      const pg=Math.min(saldo,resta);resta-=pg;v.montoPagado=montoPagadoVenta(v)+pg;v.pagado=v.montoPagado>=tot-.004;
+    });
+    return guardarVentas();
+  }
+  function renderDeudores(){
+    const p=document.getElementById('panel-deudores'),cb=cuentasPorCobrar(),ns=Object.keys(cb).sort((a,b)=>cb[b].total-cb[a].total),tot=ns.reduce((s,n)=>s+cb[n].total,0);
+    p.innerHTML=`<div class="stat-grid"><div class="stat oro"><div class="label">Total por cobrar</div><div class="val">${money(tot)}</div></div><div class="stat"><div class="label">Personas que deben</div><div class="val">${ns.length}</div></div></div>
+      <div class="card"><h2>Quiénes deben</h2>${ns.length?ns.map(n=>{const f=cb[n].items.map(i=>i.fecha).sort()[0];return`<div class="deuda" data-n="${esc(n)}"><div><b>${esc(n)}</b><span>Desde el ${fechaCorta(f)} · ${agruparVentas(cb[n].items).length} compra(s)</span></div><div class="neg">${money(cb[n].total)}</div></div>`}).join(''):'<div class="empty">Nadie debe. Todo está al día ✦</div>'}</div>`;
+    p.querySelectorAll('[data-n]').forEach(e=>e.onclick=()=>deudor(e.dataset.n));
+  }
+  function deudor(n){
+    const d=cuentasPorCobrar()[n];if(!d){cerrar();return}
+    const gs=agruparVentas(d.items).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    const s=hoja(`<div class="hh"><h3>${esc(n)}</h3><button class="x" data-c>✕</button></div>
+      <div class="total" style="padding-top:0"><span>Debe</span><span class="neg">${money(d.total)}</span></div>
+      ${gs.map(g=>`<div class="linea" style="cursor:default"><div class="t"><b>${fechaCorta(g.fecha)}</b><span>${g.items.map(i=>esc(i.tipo)+' '+fmt(i.libras)+' lb').join(' · ')}</span></div><b class="m">${money(g.items.reduce((s,i)=>s+i.libras*i.precioLibra-montoPagadoVenta(i),0))}</b></div>`).join('')}
+      <button class="btn oro full" id="todo">✓ Pagó completo · ${money(d.total)}</button>
+      <div class="sep">— o abonó —</div>
+      <div class="chips">${[5000,10000,20000,50000,100000].map(v=>`<button class="chip" data-a="${v}">+${fmt(v)}</button>`).join('')}</div>
+      <label>Valor del abono</label><input id="ab" type="number" inputmode="numeric" placeholder="0">
+      <button class="btn full" id="okab">Registrar abono</button>`);
+    const ab=s.querySelector('#ab');
+    s.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{ab.value=Math.min(d.total,num(ab.value)+ +b.dataset.a)});
+    s.querySelector('#todo').onclick=async()=>{if(!confirm(n+' pagó '+money(d.total)+'?'))return;await aplicarPago(n,d.total);toast('✓ '+n+' quedó al día');cerrar()};
+    s.querySelector('#okab').onclick=async()=>{const m=Math.min(num(ab.value),d.total);if(m<=0)return toast('Pon el valor del abono');await aplicarPago(n,m);toast('✓ Abono de '+money(m));const r=cuentasPorCobrar()[n];r?(render(),deudor(n)):cerrar()};
+  }
+
+  // ---------- Catálogo ----------
+  function renderCatalogo(){
+    const p=document.getElementById('panel-catalogo');
+    p.innerHTML=`<div class="card"><h2>Productos</h2><div class="gp">${productos.map(x=>`<button class="prod" data-ed="${x.id}"><div class="pimg">${pimg(x)}</div><b>${esc(x.nombre)}</b><span>Vende ${money(x.precio)}</span><span>Compra ${money(x.costo)}</span></button>`).join('')}</div><button class="btn oro full" id="np">＋ Nuevo producto</button></div>
+      <div class="card"><h2>Respaldo de datos</h2><p class="helptext">Guarda una copia para no perder nada o para pasar tus datos a otro teléfono.</p><div class="btn-row"><button class="btn secundario" id="ex">Descargar respaldo</button><button class="btn secundario" id="im">Restaurar respaldo</button><input type="file" id="fi" accept=".json,application/json" hidden></div></div>`;
+    p.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>editarProd(b.dataset.ed));p.querySelector('#np').onclick=()=>editarProd();
+    p.querySelector('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({compras,ventas,gastos,productos})],{type:'application/json'}));a.download='carniceria-respaldo-'+hoyStr()+'.json';a.click()};
+    p.querySelector('#im').onclick=()=>p.querySelector('#fi').click();
+    p.querySelector('#fi').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(async t=>{try{const d=JSON.parse(t);if(!d.ventas||!d.compras)throw 0;if(!confirm('Esto reemplaza los datos actuales. ¿Continuar?'))return;compras=d.compras;ventas=d.ventas;gastos=d.gastos||[];productos=d.productos||productos;await guardarCompras();await guardarVentas();await guardarGastos();guardarProd();toast('✓ Respaldo restaurado');render()}catch(x){toast('Archivo no válido')}})};
+  }
+  function editarProd(id){
+    const x=id?productos.find(p=>p.id===id):{nombre:'',precio:'',costo:'',img:null};let img=x.img;
+    const s=hoja(`<div class="hh"><h3>${id?'Editar producto':'Nuevo producto'}</h3><button class="x" data-c>✕</button></div>
+      <div class="ph"><div class="pimg" id="pv">${pimg({nombre:x.nombre||'carne',img})}</div><div><button class="btn secundario peq" id="fb">Tomar o elegir foto</button><input type="file" id="ff" accept="image/*" hidden></div></div>
+      <label>Nombre</label><input id="nm" value="${esc(x.nombre)}" autocomplete="off">
+      <label>Precio de venta por libra</label><input id="pv2" type="number" inputmode="numeric" value="${x.precio}">
+      <label>Costo de compra por libra</label><input id="co" type="number" inputmode="numeric" value="${x.costo}">
+      <button class="btn oro full" id="g">Guardar</button>${id?'<button class="btn secundario full" id="d">Eliminar del catálogo</button>':''}`);
+    s.querySelector('#fb').onclick=()=>s.querySelector('#ff').click();
+    s.querySelector('#ff').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=320;const m=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,320,320);img=c.toDataURL('image/jpeg',.8);s.querySelector('#pv').innerHTML=`<img src="${img}" alt="">`};im.src=URL.createObjectURL(f)};
+    s.querySelector('#g').onclick=()=>{const nombre=s.querySelector('#nm').value.trim().toUpperCase();if(!nombre)return toast('Falta el nombre');const o={nombre,precio:num(s.querySelector('#pv2').value),costo:num(s.querySelector('#co').value),img};if(id)Object.assign(x,o);else productos.push({id:uid(),...o});productos.sort((a,b)=>a.nombre.localeCompare(b.nombre));guardarProd();cerrar()};
+    if(id)s.querySelector('#d').onclick=()=>{if(!confirm('¿Eliminar '+x.nombre+' del catálogo? Tus ventas e historial no se borran.'))return;productos=productos.filter(p=>p.id!==id);guardarProd();cerrar()};
+  }
+
+  // ---------- Estructura general ----------
+  function render(){
+    const y=window.scrollY,nd=Object.keys(cuentasPorCobrar()).length;
+    root.innerHTML=`<header class="mast"><div class="mk">✦ ✦ ✦</div><h1>Carnicería</h1><p>Ventas, compras y deudas</p></header>
+      <nav class="tabs">${TABS.map(([k,l])=>`<div class="tab ${k===activeTab?'active':''}" data-tab="${k}">${l}${k==='deudores'&&nd?`<b>${nd}</b>`:''}</div>`).join('')}</nav>
+      <div class="wrap">${TABS.map(([k])=>`<div id="panel-${k}" class="panel ${k===activeTab?'active':''}"></div>`).join('')}</div>`;
+    root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{activeTab=t.dataset.tab;render();window.scrollTo(0,0)});
+    renderVentas();renderDeudores();renderCompras();renderInventario();renderGastos();renderResumen();renderCatalogo();renderSheets();renderInstalar();
+    const a=root.querySelector('.tab.active');if(a)a.scrollIntoView({inline:'center',block:'nearest'});
+    window.scrollTo(0,y);
+  }
+
+  // ---------- Google Sheets ----------
+  const KEY_SH="carniceria-sheets";
+  let sh=(()=>{try{return JSON.parse(localStorage.getItem(KEY_SH))||{}}catch(e){return{}}})(),shT=null,bajando=false;
+  const shSave=()=>{try{localStorage.setItem(KEY_SH,JSON.stringify(sh))}catch(e){}};
+  function pedirSync(){if(!sh.url||!sh.ok||bajando)return;clearTimeout(shT);shT=setTimeout(()=>subir(),2500)}
+  async function subir(manual){
+    if(!sh.url)return;
+    try{
+      const r=await fetch(sh.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({clave:sh.clave||'',datos:{compras,ventas,gastos,productos:productos.map(({img,...r})=>r)}})});
+      const j=await r.json();if(!j.ok)throw new Error(j.error==='clave'?'La clave no coincide':(j.error||'Error en la hoja'));
+      sh.ok=true;sh.ultima=Date.now();sh.error=null;if(manual)toast('✓ Datos en Google Sheets');
+    }catch(e){
+      if(e instanceof TypeError&&navigator.onLine){sh.ok=true;sh.ultima=Date.now();sh.error=null;if(manual)toast('✓ Enviado a Google Sheets')}
+      else{sh.error=e instanceof TypeError?'Sin internet: se enviará al volver la conexión':e.message;if(manual)toast(sh.error)}
+    }
+    shSave();estadoSheets();
+  }
+  async function bajar(){
+    const j=await(await fetch(sh.url+(sh.url.includes('?')?'&':'?')+'clave='+encodeURIComponent(sh.clave||''))).json();
+    if(!j.ok||!j.datos)throw new Error(j.error==='clave'?'La clave no coincide':'La hoja aún no tiene datos');
+    const d=j.datos,im={};productos.forEach(p=>im[p.nombre]=p.img);bajando=true;
+    compras=d.compras||[];ventas=d.ventas||[];gastos=d.gastos||[];productos=(d.productos||productos).map(p=>({...p,img:im[p.nombre]||null}));
+    await guardarCompras();await guardarVentas();await guardarGastos();guardarProd();bajando=false;
+    sh.ok=true;sh.ultima=Date.now();sh.error=null;shSave();
+  }
+  function estadoSheets(){const e=document.getElementById('sh-est');if(!e)return;e.textContent=!sh.url?'Sin conectar':sh.error?'⚠ '+sh.error:sh.ultima?'✓ Última sincronización: '+new Date(sh.ultima).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'}):'Conectado'}
+  function renderSheets(){
+    const p=document.getElementById('panel-catalogo');
+    p.insertAdjacentHTML('beforeend',`<div class="card"><h2>Google Sheets</h2><p class="helptext">Cada venta, compra, gasto y deuda se copia sola a tu hoja de cálculo.</p>
+      <label>Enlace de la aplicación web (Apps Script)</label><input id="shu" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(sh.url||'')}">
+      <label>Clave (opcional)</label><input id="shk" value="${esc(sh.clave||'')}" autocomplete="off">
+      <p class="helptext" id="sh-est" style="margin:12px 0 0"></p>
+      <button class="btn oro full" id="shs">${sh.url?'Guardar y subir datos ahora':'Conectar y subir mis datos'}</button>
+      <button class="btn secundario full" id="shb">Traer datos desde la hoja</button>
+      ${sh.url?'<button class="btn secundario full" id="shd">Desconectar</button>':''}</div>`);
+    estadoSheets();
+    const val=()=>{sh.url=p.querySelector('#shu').value.trim();sh.clave=p.querySelector('#shk').value.trim();if(!/^https:\/\/script\.google\.com\//.test(sh.url)){toast('Pega el enlace que termina en /exec');return false}return true};
+    p.querySelector('#shs').onclick=async()=>{if(!val())return;toast('Enviando…');await subir(true);render()};
+    p.querySelector('#shb').onclick=async()=>{if(!val())return;if(!confirm('Esto reemplaza los datos de este teléfono con los de la hoja. ¿Continuar?'))return;try{toast('Descargando…');await bajar();toast('✓ Datos traídos');render()}catch(e){toast(e instanceof TypeError?'No se pudo conectar con la hoja':e.message)}};
+    const d=p.querySelector('#shd');if(d)d.onclick=()=>{sh={};shSave();render()};
+  }
+  window.addEventListener('online',()=>{if(sh.url&&sh.error)subir()});
+
+  // ---------- Instalar ----------
+  let pwaEv=null;
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pwaEv=e});
+  window.addEventListener('appinstalled',()=>{pwaEv=null;toast('✓ Aplicación instalada')});
+  const instalada=()=>!!(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  function renderInstalar(){
+    const p=document.getElementById('panel-resumen');
+    p.insertAdjacentHTML('afterbegin',`<div class="card"><h2>Aplicación en tu celular</h2><p class="helptext" style="margin-top:0">Instálala para abrirla como una app, a pantalla completa y sin internet.</p><button class="btn oro full" id="inst">${instalada()?'✓ Ya está instalada':'Instalar'}</button></div>`);
+    p.querySelector('#inst').onclick=async()=>{
+      if(instalada())return toast('Ya está instalada');
+      if(pwaEv){pwaEv.prompt();await pwaEv.userChoice;pwaEv=null;return}
+      const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+      const pasos=ios?['Abre esta página en <b>Safari</b>.','Toca el botón <b>Compartir</b> (el cuadro con la flecha hacia arriba).','Baja y elige <b>Añadir a pantalla de inicio</b>.','Toca <b>Añadir</b>. Ya tendrás el ícono de Carnicería.']
+        :['Abre esta página en <b>Chrome</b>.','Toca el menú <b>⋮</b> (arriba a la derecha).','Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.','Confirma con <b>Instalar</b>.'];
+      hoja(`<div class="hh"><h3>${ios?'Instalar en iPhone':'Instalar en Android'}</h3><button class="x" data-c>✕</button></div><ol style="padding-left:20px;line-height:1.9;font-size:16px">${pasos.map(x=>`<li>${x}</li>`).join('')}</ol><button class="btn oro full" data-c>Entendido</button>`);
+    };
+  }
+  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+  async function cargarDatos(){
+    try{ const v = localStorage.getItem(KEY_COMPRAS); compras = v ? JSON.parse(v) : []; }catch(e){ compras = []; }
+    try{ const v = localStorage.getItem(KEY_VENTAS); ventas = v ? JSON.parse(v) : []; }catch(e){ ventas = []; }
+    try{ const v = localStorage.getItem(KEY_GASTOS); gastos = v ? JSON.parse(v) : []; }catch(e){ gastos = []; }
+
+    // Migración de datos del formato anterior (una sola tabla registros con compra+venta juntos)
+    if(compras.length === 0 && ventas.length === 0){
+      try{
+        const old = localStorage.getItem(KEY_OLD_REGISTROS);
+        if(old){
+          const oldRegs = JSON.parse(old);
+          oldRegs.forEach(r=>{
+            if(r.librasCompradas > 0){
+              compras.push({ id: uid(), fecha: r.semana, tipo: r.tipo, libras: r.librasCompradas, costoLibra: r.costoLibra });
+            }
+            if(r.librasVendidas > 0){
+              ventas.push({ id: uid(), fecha: r.semana, cliente: "Sin nombre", tipo: r.tipo, libras: r.librasVendidas, precioLibra: r.precioVenta, metodoPago: "efectivo", pagado: true });
+            }
+          });
+          if(compras.length || ventas.length){
+            await guardarCompras();
+            await guardarVentas();
+          }
+        }
+      }catch(e){ /* no había datos anteriores */ }
+    }
+
+    // Carga inicial con los datos completos de los resúmenes de Mayo, Junio, Julio y Agosto 2026
+    // (reconstruido a partir de los PDF de resumen mensual; solo se usa si aún no hay nada guardado)
+    if(compras.length === 0 && ventas.length === 0 && gastos.length === 0){
+      compras = [
+        // Mayo 2026
+        { id: uid(), fecha:"2026-05-22", tipo:"COSTILLA AHUMADA", libras:7.00, costoLibra:9000 },
+        { id: uid(), fecha:"2026-05-22", tipo:"BOLA", libras:8.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-05-22", tipo:"CERDO AHUMADO", libras:12.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-05-29", tipo:"BOLA", libras:19.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-05-29", tipo:"MOLIDA", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-05-29", tipo:"ESPALDILLA", libras:1.00, costoLibra:10000 },
+        // Junio 2026
+        { id: uid(), fecha:"2026-06-12", tipo:"BOLA", libras:8.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"MOLIDA", libras:5.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"ESPALDILLA", libras:5.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"COSTILLA DE RES", libras:3.00, costoLibra:9000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"CERDO", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"COSTILLA DE CERDO", libras:2.00, costoLibra:9000 },
+        { id: uid(), fecha:"2026-06-12", tipo:"TOCINO", libras:3.00, costoLibra:4000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"BOLA", libras:14.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"MOLIDA", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"ESPALDILLA", libras:3.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"CERDO", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"TOCINO", libras:4.00, costoLibra:4000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"PANCETA", libras:2.00, costoLibra:9000 },
+        { id: uid(), fecha:"2026-06-19", tipo:"LOMO DE CERDO", libras:2.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-26", tipo:"LOMO DE CERDO", libras:3.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-06-26", tipo:"COSTILLA AHUMADA", libras:10.50, costoLibra:9000 },
+        { id: uid(), fecha:"2026-06-26", tipo:"CERDO AHUMADO", libras:6.00, costoLibra:10000 },
+        // Julio 2026
+        { id: uid(), fecha:"2026-07-03", tipo:"BOLA", libras:17.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-07-03", tipo:"MOLIDA", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-03", tipo:"CERDO", libras:10.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-03", tipo:"LOMO DE CERDO", libras:3.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-16", tipo:"COSTILLA AHUMADA", libras:14.00, costoLibra:8000 },
+        { id: uid(), fecha:"2026-07-16", tipo:"CERDO AHUMADO", libras:18.00, costoLibra:11100 },
+        { id: uid(), fecha:"2026-07-16", tipo:"LOMO DE CERDO", libras:10.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-16", tipo:"COSTILLA DE CERDO", libras:4.00, costoLibra:8000 },
+        { id: uid(), fecha:"2026-07-16", tipo:"PANCETA", libras:4.00, costoLibra:8000 },
+        { id: uid(), fecha:"2026-07-17", tipo:"BOLA", libras:18.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-07-17", tipo:"MOLIDA", libras:6.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-17", tipo:"ESPALDILLA", libras:5.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"LOMO DE CERDO", libras:5.50, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"CERDO", libras:10.50, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"MOLIDA", libras:3.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"COSTILLA DE RES", libras:1.00, costoLibra:9000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"BOLA", libras:9.50, costoLibra:12000 },
+        { id: uid(), fecha:"2026-07-19", tipo:"ESPALDILLA", libras:3.00, costoLibra:0 },
+        { id: uid(), fecha:"2026-07-19", tipo:"TOCINO", libras:1.50, costoLibra:0 },
+        { id: uid(), fecha:"2026-07-30", tipo:"CERDO", libras:4.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-30", tipo:"LOMO DE CERDO", libras:5.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-30", tipo:"CERDO AHUMADO", libras:18.00, costoLibra:11111 },
+        { id: uid(), fecha:"2026-07-31", tipo:"BOLA", libras:15.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-07-31", tipo:"ESPALDILLA", libras:2.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-31", tipo:"MOLIDA", libras:4.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-07-31", tipo:"HUESO CARNUDO", libras:2.00, costoLibra:7000 },
+        { id: uid(), fecha:"2026-07-31", tipo:"COSTILLA DE RES", libras:5.00, costoLibra:9000 },
+        // Agosto 2026
+        { id: uid(), fecha:"2026-08-28", tipo:"BOLA", libras:18.00, costoLibra:12000 },
+        { id: uid(), fecha:"2026-08-28", tipo:"ESPALDILLA", libras:4.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-08-28", tipo:"MOLIDA", libras:7.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-08-28", tipo:"COSTILLA DE RES", libras:2.00, costoLibra:18000 },
+        { id: uid(), fecha:"2026-08-28", tipo:"CERDO", libras:7.00, costoLibra:10000 },
+        { id: uid(), fecha:"2026-08-28", tipo:"LOMO DE CERDO", libras:3.00, costoLibra:10000 }
+      ];
+      ventas = [
+        // Mayo 2026 (todo pagado)
+        { id: uid(), fecha:"2026-05-22", cliente:"LUCY", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROLINA", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:4.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"MARCELA", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-22", cliente:"PASTORA", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CAROLINA", tipo:"COSTILLA AHUMADA", libras:3.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"LUCY", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"GRACIELA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:140000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:1.50, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CLAUDIA", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:12500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CAROL", tipo:"CERDO AHUMADO", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-05-29", cliente:"CAROL", tipo:"ESPALDILLA", libras:1.50, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        // Junio 2026 (todo pagado)
+        { id: uid(), fecha:"2026-06-05", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"PASTORA", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"GRACIELA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CAROLINA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CAROLINA GUTIERRES", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:3.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"MARCELA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CLAUDIA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CLAUDIA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"CLAUDIA", tipo:"TOCINO", libras:1.50, precioLibra:5000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-05", cliente:"MARTHA", tipo:"CERDO", libras:1.50, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:12500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROLINA GUTIERRES", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROL", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CAROL", tipo:"ESPALDILLA", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CLAUDIA", tipo:"TOCINO", libras:3.00, precioLibra:5000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CLAUDIA", tipo:"COSTILLA DE CERDO", libras:1.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-12", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CLAUDIA", tipo:"TOCINO", libras:4.00, precioLibra:5000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CLAUDIA", tipo:"PANCETA", libras:1.00, precioLibra:13500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.50, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"MARCELA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"LUCY", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"LEIDY", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-19", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROL", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROL", tipo:"CERDO AHUMADO", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROL", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"LUCY", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-06-26", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        // Julio 2026
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROL", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROL", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"MARTHA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROLINA", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROLINA", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:1.50, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-03", cliente:"MILITA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROL", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"LUCY", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROLINA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROLINA", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:13000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROLINA GUTIERRES", tipo:"MOLIDA", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-10", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CLAUDIA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:1.50, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"MARIA EUGENIA", tipo:"BOLA", libras:2.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"MARIA EUGENIA", tipo:"CERDO AHUMADO", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CAROLINA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"CAROLINA", tipo:"BOLA", libras:1.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:4.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"LUCY", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:16000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-17", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-18", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-18", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-18", cliente:"CAROL", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"MARCIAL", tipo:"CERDO AHUMADO", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"LUCY", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE CERDO", libras:1.00, precioLibra:13500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"CAROLINA GUTIERRES", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"CAROLINA", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"MAGALY", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"MAGALY", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-07-25", cliente:"NICOLE", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-07-25", cliente:"CAMILA IGLESIA", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-07-31", cliente:"CAROL", tipo:"CERDO AHUMADO", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-31", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-07-31", cliente:"CAROL", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        // Agosto 2026
+        { id: uid(), fecha:"2026-08-01", cliente:"MARTHA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-01", cliente:"CLAUDIA", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-01", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-01", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"PASTORA", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAROLINA GUTIERRES", tipo:"HUESO CARNUDO", libras:1.00, precioLibra:11000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAMILA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAROLINA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAROLINA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-01", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CLAUDIA", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-08", cliente:"CLAUDIA", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-08", cliente:"CLAUDIA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAROL", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:4.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"MARCELA", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"LUCY", tipo:"LOMO DE CERDO", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-08", cliente:"CAMILA IGLESIA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:19354.84 },
+        { id: uid(), fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:false, montoPagado:23225.81 },
+        { id: uid(), fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13500, metodoPago:"transferencia", pagado:false, montoPagado:17419.35 },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAMILA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAMILA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"PASTORA", tipo:"BOLA", libras:6.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"PASTORA", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"LUCY", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"MARTHA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:2.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"MARCIAL", tipo:"CERDO AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:3.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"TOCINO", libras:1.00, precioLibra:4000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"PANCETA", libras:2.00, precioLibra:13500, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-15", cliente:"KAREN", tipo:"GRASA", libras:1.00, precioLibra:4000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-28", cliente:"MARCELA", tipo:"CERDO AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-28", cliente:"MARCELA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"CAROL", tipo:"MOLIDA", libras:3.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"CAROL", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"CAROL", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+        { id: uid(), fecha:"2026-08-29", cliente:"LUCY", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-29", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-29", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        // Septiembre 2026
+        { id: uid(), fecha:"2026-09-04", cliente:"CAROL", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"CAROL", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"MARTHA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"MAGALY", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+        { id: uid(), fecha:"2026-09-04", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 }
+      ];
+      gastos = [
+        // Junio 2026
+        { id: uid(), fecha:"2026-06-06", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-06-06", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-06-13", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-06-13", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-06-17", concepto:"SUELDO", monto:150000 },
+        { id: uid(), fecha:"2026-06-20", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-06-20", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-06-20", concepto:"ADOBO", monto:5000 },
+        { id: uid(), fecha:"2026-06-24", concepto:"ENCOMIENDA POLLO", monto:15000 },
+        { id: uid(), fecha:"2026-06-24", concepto:"SPOTIFY", monto:5000 },
+        { id: uid(), fecha:"2026-06-24", concepto:"BOLSAS POLLO", monto:6000 },
+        // Julio 2026
+        { id: uid(), fecha:"2026-07-01", concepto:"DOMI PASTORA", monto:9000 },
+        { id: uid(), fecha:"2026-07-02", concepto:"ENCOMIENDA POLLO", monto:15000 },
+        { id: uid(), fecha:"2026-07-04", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-07-04", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-07-04", concepto:"RIFA KAREN", monto:10000 },
+        { id: uid(), fecha:"2026-07-18", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-07-18", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-07-22", concepto:"SUELDO", monto:150000 },
+        { id: uid(), fecha:"2026-07-25", concepto:"INDRIVER", monto:8000 },
+        { id: uid(), fecha:"2026-07-25", concepto:"DIEZMO", monto:10000 },
+        // Agosto 2026
+        { id: uid(), fecha:"2026-08-01", concepto:"DOLARCITY", monto:11000 },
+        { id: uid(), fecha:"2026-08-01", concepto:"INDRIVER", monto:10000 },
+        { id: uid(), fecha:"2026-08-01", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-08-02", concepto:"PLAN CELULAR", monto:43000 },
+        { id: uid(), fecha:"2026-08-08", concepto:"INDRIVER", monto:20000 },
+        { id: uid(), fecha:"2026-08-08", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-08-08", concepto:"COMIDA", monto:15000 },
+        { id: uid(), fecha:"2026-08-28", concepto:"INDRIVER", monto:20000 },
+        { id: uid(), fecha:"2026-08-28", concepto:"DIEZMO", monto:10000 },
+        { id: uid(), fecha:"2026-08-28", concepto:"PAGO SUELDO SOL", monto:150000 }
+      ];
+      await guardarCompras();
+      await guardarVentas();
+      await guardarGastos();
+    }
+
+    // Migración: agrega semanas de agosto (13, 28, 29) y septiembre (04) que
+    // podían faltar aunque el navegador ya tuviera datos guardados. No duplica
+    // nada: cada registro se agrega solo si no existe ya uno igual.
+    await migrarSemanasFaltantes();
+    await agregarGastosOctubre();
+    await iniciarProductos();
+    render();
+  }
+
+  function existeCompra(c){
+    return compras.some(x => x.fecha===c.fecha && x.tipo===c.tipo && Math.abs(x.libras-c.libras)<0.001 && Math.abs(x.costoLibra-c.costoLibra)<0.01);
+  }
+  function existeVenta(v){
+    return ventas.some(x => x.fecha===v.fecha && x.cliente===v.cliente && x.tipo===v.tipo && Math.abs(x.libras-v.libras)<0.001 && Math.abs(x.precioLibra-v.precioLibra)<0.01);
+  }
+  function existeGasto(g){
+    return gastos.some(x => x.fecha===g.fecha && x.concepto===g.concepto && Math.abs(x.monto-g.monto)<0.01);
+  }
+
+  // Gastos reales de octubre (según lo que se anotó en la app):
+  //  10-oct: INDRIVER y DIEZMO ($10.000 c/u)
+  //  06-oct: BOLSAS SIPLO $18.000, BOLSA NEGRA INDUSTRIAL $5.000, SPOTY DOS MESES $10.000
+  // Se agregan solo si no existen (sin importar mayúsculas), y se limpian duplicados
+  // y los gastos del 3-oct que no eran reales.
+  async function agregarGastosOctubre(){
+    const norm = t => String(t||'').trim().toUpperCase();
+    let cambio = false;
+    const antes = gastos.length;
+    // quita los INDRIVER/DIEZMO del 3-oct (los había supuesto una versión anterior)
+    gastos = gastos.filter(g => !(g.fecha==="2026-10-03" && (norm(g.concepto)==="INDRIVER" || norm(g.concepto)==="DIEZMO") && Math.abs(g.monto-10000)<0.01));
+    if(gastos.length !== antes) cambio = true;
+    const reales = [
+      { fecha:"2026-10-10", concepto:"INDRIVER", monto:10000 },
+      { fecha:"2026-10-10", concepto:"DIEZMO", monto:10000 },
+      { fecha:"2026-10-06", concepto:"BOLSAS SIPLO", monto:18000 },
+      { fecha:"2026-10-06", concepto:"BOLSA NEGRA INDUSTRIAL", monto:5000 },
+      { fecha:"2026-10-06", concepto:"SPOTY DOS MESES", monto:10000 }
+    ];
+    reales.forEach(g=>{
+      const hay = gastos.some(x => x.fecha===g.fecha && norm(x.concepto)===norm(g.concepto) && Math.abs(x.monto-g.monto)<0.01);
+      if(!hay){ gastos.push({ id: uid(), ...g }); cambio = true; }
+    });
+    // quita duplicados exactos de octubre (misma fecha, concepto sin importar mayúsculas y monto)
+    const vistos = new Set();
+    const limpios = gastos.filter(g=>{
+      if(!(g.fecha && g.fecha.startsWith("2026-10"))) return true;
+      const k = g.fecha + "|" + norm(g.concepto) + "|" + g.monto;
+      if(vistos.has(k)) return false;
+      vistos.add(k); return true;
+    });
+    if(limpios.length !== gastos.length){ gastos = limpios; cambio = true; }
+    if(cambio) await guardarGastos();
+  }
+
+  async function migrarSemanasFaltantes(){
+    let cambioCompras = false, cambioVentas = false, cambioGastos = false;
+    const KEY_SYNC_PDF = "carniceria-sync-pdf-v9";
+    try{ if(localStorage.getItem(KEY_SYNC_PDF) === "1") return; }catch(e){}
+
+    const comprasFaltantes = [
+      { fecha:"2026-08-28", tipo:"BOLA", libras:18.00, costoLibra:12000 },
+      { fecha:"2026-08-28", tipo:"ESPALDILLA", libras:4.00, costoLibra:10000 },
+      { fecha:"2026-08-28", tipo:"MOLIDA", libras:7.00, costoLibra:10000 },
+      { fecha:"2026-08-28", tipo:"COSTILLA DE RES", libras:2.00, costoLibra:18000 },
+      { fecha:"2026-08-28", tipo:"CERDO", libras:7.00, costoLibra:10000 },
+      { fecha:"2026-08-28", tipo:"LOMO DE CERDO", libras:3.00, costoLibra:10000 }
+    ];
+    comprasFaltantes.forEach(c=>{
+      if(!existeCompra(c)){ compras.push({ id: uid(), ...c }); cambioCompras = true; }
+    });
+
+    const ventasFaltantes = [
+      { fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:19354.84 },
+      { fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:false, montoPagado:23225.81 },
+      { fecha:"2026-08-13", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13500, metodoPago:"transferencia", pagado:false, montoPagado:17419.35 },
+      { fecha:"2026-08-28", cliente:"MARCELA", tipo:"CERDO AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-28", cliente:"MARCELA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-29", cliente:"CAROL", tipo:"MOLIDA", libras:3.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-29", cliente:"CAROL", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-29", cliente:"CAROL", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-29", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-29", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-29", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-29", cliente:"LUCY", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"TOCINO", libras:3.00, precioLibra:5000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-08-29", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"CAROL", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"CAROL", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"MARTHA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"MAGALY", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-04", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 }
+    ];
+    ventasFaltantes.forEach(v=>{
+      if(!existeVenta(v)){ ventas.push({ id: uid(), ...v }); cambioVentas = true; }
+    });
+
+    const gastosFaltantes = [
+      { fecha:"2026-08-28", concepto:"INDRIVER", monto:20000 },
+      { fecha:"2026-08-28", concepto:"DIEZMO", monto:10000 },
+      { fecha:"2026-08-28", concepto:"PAGO SUELDO SOL", monto:150000 }
+    ];
+    gastosFaltantes.forEach(g=>{
+      if(!existeGasto(g)){ gastos.push({ id: uid(), ...g }); cambioGastos = true; }
+    });
+
+    // Corrige dos ventas de agosto que en el resumen mensual ya aparecen
+    // pagadas por transferencia (solo si siguen marcadas como pendientes).
+    ventas.forEach(v=>{
+      if(v.fecha==="2026-08-08" && v.cliente==="LUCY" && v.tipo==="LOMO DE CERDO" && v.pagado===false){
+        v.metodoPago = "transferencia"; v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(v.fecha==="2026-08-08" && v.cliente==="CAROLINA" && (v.tipo==="BOLA"||v.tipo==="MOLIDA") && v.pagado===false){
+        v.metodoPago = "transferencia"; v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(v.fecha==="2026-08-08" && v.cliente==="PASTORA" && (v.tipo==="BOLA"||v.tipo==="ESPALDILLA") && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(((v.fecha==="2026-07-17" && v.tipo==="BOLA") || (v.fecha==="2026-07-25" && v.tipo==="COSTILLA AHUMADA")) && v.cliente==="CAROLINA" && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(v.fecha==="2026-07-03" && v.cliente==="KAREN" && v.tipo==="MOLIDA" && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+    });
+
+    // Migración: agrega la semana de septiembre que faltaba (05 y 12) según el
+    // resumen de septiembre 2026, con quién pagó y quién quedó debiendo, más la
+    // compra del 15 de septiembre y los gastos del 12. No duplica nada.
+    const comprasFaltantes2 = [
+      { fecha:"2026-09-15", tipo:"BOLA", libras:16.00, costoLibra:12000 },
+      { fecha:"2026-09-15", tipo:"CERDO", libras:10.00, costoLibra:10000 },
+      { fecha:"2026-09-15", tipo:"MOLIDA", libras:7.00, costoLibra:10000 },
+      { fecha:"2026-09-15", tipo:"ESPALDILLA", libras:3.00, costoLibra:10000 },
+      { fecha:"2026-09-15", tipo:"COSTILLA DE RES", libras:3.00, costoLibra:9000 }
+    ];
+    comprasFaltantes2.forEach(c=>{
+      if(!existeCompra(c)){ compras.push({ id: uid(), ...c }); cambioCompras = true; }
+    });
+
+    const ventasFaltantes2 = [
+      { fecha:"2026-09-05", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CAMILA IGLESIA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"CAMILA IGLESIA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:13500, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"CAROLINA GUTIERRES", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-12", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"PASTORA", tipo:"COSTILLA DE RES", libras:1.00, precioLibra:27000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"PIZZA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-12", cliente:"CAROLINA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CLAUDIA", tipo:"PANCETA", libras:2.00, precioLibra:13000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CLAUDIA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CLAUDIA", tipo:"CERDO", libras:3.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-12", cliente:"CLAUDIA", tipo:"ESPALDILLA", libras:1.00, precioLibra:15000.23, metodoPago:"efectivo", pagado:false, montoPagado:0 }
+    ];
+    ventasFaltantes2.forEach(v=>{
+      if(!existeVenta(v)){ ventas.push({ id: uid(), ...v }); cambioVentas = true; }
+    });
+
+    const gastosFaltantes2 = [
+      { fecha:"2026-09-12", concepto:"INDRIVER", monto:10000 },
+      { fecha:"2026-09-12", concepto:"DIEZMO", monto:10000 }
+    ];
+    gastosFaltantes2.forEach(g=>{
+      if(!existeGasto(g)){ gastos.push({ id: uid(), ...g }); cambioGastos = true; }
+    });
+
+    // Semana del 26 de septiembre (venia completa en el resumen mensual)
+    const comprasFaltantes3 = [
+      { fecha:"2026-09-18", tipo:"COSTILLA AHUMADA", libras:10.00, costoLibra:8000 },
+      { fecha:"2026-09-18", tipo:"CERDO AHUMADO", libras:18.50, costoLibra:11900 },
+      { fecha:"2026-09-18", tipo:"CERDO", libras:12.00, costoLibra:10000 },
+      { fecha:"2026-09-27", tipo:"BOLA", libras:16.00, costoLibra:12000 },
+      { fecha:"2026-09-27", tipo:"LOMO DE CERDO", libras:5.00, costoLibra:10000 },
+      { fecha:"2026-09-27", tipo:"MOLIDA", libras:7.00, costoLibra:10000 },
+      { fecha:"2026-09-27", tipo:"ESPALDILLA", libras:4.00, costoLibra:10000 },
+      { fecha:"2026-09-27", tipo:"COSTILLA DE RES", libras:2.00, costoLibra:9000 }
+    ];
+    comprasFaltantes3.forEach(c=>{
+      if(!existeCompra(c)){ compras.push({ id: uid(), ...c }); cambioCompras = true; }
+    });
+
+    const ventasFaltantes4 = [
+      { fecha:"2026-09-26", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"PASTORA", tipo:"ESPALDILLA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"MARCELA", tipo:"CERDO AHUMADO", libras:4.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-26", cliente:"MARCELA", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-26", cliente:"LUCY", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-26", cliente:"CAROL", tipo:"CERDO AHUMADO", libras:5.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-26", cliente:"CAROL", tipo:"COSTILLA AHUMADA", libras:2.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-26", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"MARCIAL", tipo:"CERDO AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-26", cliente:"MARTHA", tipo:"BOLA", libras:1.50, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-26", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-26", cliente:"CAROLINA", tipo:"CERDO", libras:2.00, precioLibra:14000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"CAMILA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-26", cliente:"MAICOL", tipo:"CERDO AHUMADO", libras:1.00, precioLibra:17000, metodoPago:"transferencia", pagado:false, montoPagado:0 }
+    ];
+    ventasFaltantes4.forEach(v=>{
+      if(!existeVenta(v)){ ventas.push({ id: uid(), ...v }); cambioVentas = true; }
+    });
+
+    const gastosFaltantes3 = [
+      { fecha:"2026-09-26", concepto:"INDRIVER", monto:10000 },
+      { fecha:"2026-09-26", concepto:"DIEZMO", monto:10000 },
+      { fecha:"2026-09-26", concepto:"PELUQUEADA", monto:20000 },
+      { fecha:"2026-09-26", concepto:"MERCADO", monto:84000 },
+      { fecha:"2026-09-26", concepto:"PIZZA", monto:5000 }
+    ];
+    gastosFaltantes3.forEach(g=>{
+      if(!existeGasto(g)){ gastos.push({ id: uid(), ...g }); cambioGastos = true; }
+    });
+
+    // Semana del 19 de septiembre (y el 24), que faltaba por completo.
+    const ventasFaltantes5 = [
+      { fecha:"2026-09-19", cliente:"CAROL", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-19", cliente:"CAROL", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-19", cliente:"MARTHA", tipo:"ESPALDILLA", libras:1.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-19", cliente:"MARTHA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-19", cliente:"MARCELA", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-19", cliente:"PASTORA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-19", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-09-19", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-19", cliente:"CLAUDIA", tipo:"CERDO", libras:4.00, precioLibra:14000, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-19", cliente:"CLAUDIA", tipo:"PANCETA", libras:1.00, precioLibra:13500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-19", cliente:"CLAUDIA", tipo:"COSTILLA DE CERDO", libras:1.00, precioLibra:13500, metodoPago:"efectivo", pagado:false, montoPagado:0 },
+      { fecha:"2026-09-24", cliente:"CAMILA IGLESIA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-09-24", cliente:"CAMILA IGLESIA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true }
+    ];
+    ventasFaltantes5.forEach(v=>{
+      if(!existeVenta(v)){ ventas.push({ id: uid(), ...v }); cambioVentas = true; }
+    });
+
+    const gastosFaltantes4 = [
+      { fecha:"2026-09-19", concepto:"DIEZMO", monto:10000 },
+      { fecha:"2026-09-19", concepto:"INDRIVER", monto:10000 }
+    ];
+    gastosFaltantes4.forEach(g=>{
+      if(!existeGasto(g)){ gastos.push({ id: uid(), ...g }); cambioGastos = true; }
+    });
+
+    // Corrige las ventas del 04 de septiembre: en el resumen mensual ya
+    // figuran como pagadas (transferencia o efectivo según el caso), pero
+    // habían quedado guardadas como pendientes.
+    ventas.forEach(v=>{
+      if(v.fecha==="2026-09-04" && v.pagado===false){
+        if((v.cliente==="CAROL") || (v.cliente==="LUCY" && v.tipo==="BOLA") || (v.cliente==="MARTHA")){
+          v.metodoPago = "transferencia"; v.pagado = true; delete v.montoPagado; cambioVentas = true;
+        } else if(v.cliente==="MAGALY" || v.cliente==="PASTORA"){
+          v.metodoPago = "efectivo"; v.pagado = true; delete v.montoPagado; cambioVentas = true;
+        }
+      }
+      // Estas ya se cobraron y quedaron completas (confirmado con el cliente):
+      // Carolina Gutierres 13-ago, Lucy 29-ago y Pastora 29-ago.
+      if(v.fecha==="2026-08-13" && v.cliente==="CAROLINA GUTIERRES" && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(v.fecha==="2026-08-29" && v.cliente==="LUCY" && v.tipo==="COSTILLA AHUMADA" && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+      if(v.fecha==="2026-08-29" && v.cliente==="PASTORA" && v.pagado===false){
+        v.pagado = true; delete v.montoPagado; cambioVentas = true;
+      }
+    });
+
+    // Migración: agrega la semana del 14 de agosto (ventas del 15-ago) que
+    // faltaba por completo, según el resumen mensual de agosto 2026. No hubo
+    // compras ni gastos registrados esa semana. No duplica nada.
+    const ventasFaltantes3 = [
+      { fecha:"2026-08-15", cliente:"CAROLINA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAROLINA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAROLINA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAMILA", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAMILA", tipo:"CERDO", libras:1.00, precioLibra:14000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"BOLA", libras:2.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CAROLINA GUTIERRES", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"PASTORA", tipo:"BOLA", libras:6.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"PASTORA", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"PASTORA", tipo:"MOLIDA", libras:2.00, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"LUCY", tipo:"BOLA", libras:1.00, precioLibra:18000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"LUCY", tipo:"COSTILLA AHUMADA", libras:1.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"MARTHA", tipo:"BOLA", libras:3.00, precioLibra:18000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"MARTHA", tipo:"LOMO DE CERDO", libras:2.50, precioLibra:15000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"MARCIAL", tipo:"CERDO AHUMADA", libras:2.00, precioLibra:17000, metodoPago:"efectivo", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"CERDO AHUMADA", libras:3.00, precioLibra:17000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"COSTILLA AHUMADA", libras:3.00, precioLibra:16500, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"TOCINO", libras:1.00, precioLibra:4000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"COSTILLA DE RES", libras:2.00, precioLibra:13000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"PANCETA", libras:2.00, precioLibra:13500, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"CLAUDIA", tipo:"LOMO DE CERDO", libras:2.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"KAREN", tipo:"MOLIDA", libras:1.00, precioLibra:15000, metodoPago:"transferencia", pagado:true },
+      { fecha:"2026-08-15", cliente:"KAREN", tipo:"GRASA", libras:1.00, precioLibra:4000, metodoPago:"transferencia", pagado:true }
+    ];
+    ventasFaltantes3.forEach(v=>{
+      if(!existeVenta(v)){ ventas.push({ id: uid(), ...v }); cambioVentas = true; }
+    });
+
+    // Estas ventas de septiembre ya se cobraron completas. Quedan pendientes
+    // únicamente CLAUDIA, CAROLINA GUTIERRES, LUCY, NICOLE y CAMILA IGLESIA.
+    ventas.forEach(v=>{
+      if(v.pagado===false){
+        if(v.fecha==="2026-09-05" && v.cliente==="KAREN"){
+          v.pagado = true; delete v.montoPagado; cambioVentas = true;
+        }
+        if(v.fecha==="2026-09-12" && (v.cliente==="CAROL" || v.cliente==="CAROLINA" || v.cliente==="PASTORA")){
+          v.pagado = true; delete v.montoPagado; cambioVentas = true;
+        }
+      }
+    });
+
+    ventas.forEach(v=>{
+      if(v.fecha==="2026-09-12" && v.pagado===false){
+        if(v.cliente==="CAROLINA GUTIERRES" || v.cliente==="LUCY"){
+          v.metodoPago = "transferencia"; v.pagado = true; delete v.montoPagado; cambioVentas = true;
+        }
+      }
+      if(v.fecha==="2026-09-19" && v.cliente==="CLAUDIA" && v.tipo==="ESPALDILLA"){
+        v.fecha = "2026-09-12"; cambioVentas = true;
+      }
+    });
+
+    // ===== Sincronización con los resúmenes oficiales (PDF) de Mayo a Octubre 2026 =====
+    // Deja ventas, compras y gastos EXACTAMENTE como en los PDFs: quién pagó,
+    // por qué método y quién debe. Corre una sola vez por navegador; después
+    // puedes seguir registrando y editando normal.
+    {
+      const SYNC_VENTAS = [
+      ["2026-05-22","LUCY","CERDO AHUMADO",1,16500,"transferencia",1],
+      ["2026-05-22","CAROLINA GUTIERRES","BOLA",1,16000,"transferencia",1],
+      ["2026-05-22","CAROLINA GUTIERRES","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-05-22","CAROLINA","BOLA",2,16000,"transferencia",1],
+      ["2026-05-22","CAROLINA","MOLIDA",1,14000,"transferencia",1],
+      ["2026-05-22","CAROLINA","COSTILLA AHUMADA",2,16500,"transferencia",1],
+      ["2026-05-22","CAROL","COSTILLA AHUMADA",2,16500,"transferencia",1],
+      ["2026-05-22","CAROL","MOLIDA",2,14000,"transferencia",1],
+      ["2026-05-22","CAROL","BOLA",2,16000,"transferencia",1],
+      ["2026-05-22","MARCELA","CERDO AHUMADO",4,16500,"efectivo",1],
+      ["2026-05-22","MARCELA","LOMO DE CERDO",2,15000,"efectivo",1],
+      ["2026-05-22","MARTHA","BOLA",1.5,16000,"efectivo",1],
+      ["2026-05-22","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-05-22","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-05-22","PASTORA","MOLIDA",1,14000,"efectivo",1],
+      ["2026-05-29","CAROLINA","COSTILLA AHUMADA",3,16500,"efectivo",1],
+      ["2026-05-29","CAROLINA","BOLA",2,16000,"efectivo",1],
+      ["2026-05-29","MARTHA","ESPALDILLA",1,14000,"efectivo",1],
+      ["2026-05-29","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-05-29","LUCY","CERDO",1,14000,"efectivo",1],
+      ["2026-05-29","GRACIELA","BOLA",3,16000,"efectivo",1],
+      ["2026-05-29","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-05-29","PASTORA","MOLIDA",2,14000,"efectivo",1],
+      ["2026-05-29","KAREN","MOLIDA",1,140000,"transferencia",1],
+      ["2026-05-29","CLAUDIA","CERDO",3,14000,"efectivo",1],
+      ["2026-05-29","CLAUDIA","ESPALDILLA",1.5,14000,"efectivo",1],
+      ["2026-05-29","CLAUDIA","COSTILLA DE RES",1,12500,"efectivo",1],
+      ["2026-05-29","CAROL","CERDO AHUMADO",2,16500,"transferencia",1],
+      ["2026-05-29","CAROL","MOLIDA",2,14000,"transferencia",1],
+      ["2026-05-29","CAROL","ESPALDILLA",1.5,14000,"transferencia",1],
+      ["2026-06-05","LUCY","BOLA",1,16000,"transferencia",1],
+      ["2026-06-05","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-06-05","PASTORA","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-06-05","GRACIELA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-05","CAROLINA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-05","CAROLINA","MOLIDA",1,14000,"efectivo",1],
+      ["2026-06-05","CAROLINA","CERDO",1,14000,"efectivo",1],
+      ["2026-06-05","CAROLINA GUTIERRES","CERDO",1,14000,"transferencia",1],
+      ["2026-06-05","CAROLINA GUTIERRES","BOLA",1,16000,"transferencia",1],
+      ["2026-06-05","MARCELA","CERDO AHUMADO",3,16500,"efectivo",1],
+      ["2026-06-05","MARCELA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-05","CLAUDIA","BOLA",2,16000,"transferencia",1],
+      ["2026-06-05","CLAUDIA","CERDO",1,14000,"transferencia",1],
+      ["2026-06-05","CLAUDIA","TOCINO",1.5,5000,"transferencia",1],
+      ["2026-06-05","MARTHA","BOLA",1.5,16000,"efectivo",1],
+      ["2026-06-05","MARTHA","CERDO",1.5,14000,"efectivo",1],
+      ["2026-06-12","CAROLINA GUTIERRES","COSTILLA DE RES",1,12500,"transferencia",1],
+      ["2026-06-12","CAROLINA GUTIERRES","CERDO",1,14000,"transferencia",1],
+      ["2026-06-12","CAROLINA GUTIERRES","BOLA",1,16000,"transferencia",1],
+      ["2026-06-12","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-06-12","PASTORA","ESPALDILLA",2,14000,"efectivo",1],
+      ["2026-06-12","LUCY","BOLA",1,16000,"efectivo",1],
+      ["2026-06-12","KAREN","MOLIDA",1,14000,"transferencia",1],
+      ["2026-06-12","CAROLINA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-12","CAROL","MOLIDA",2,14000,"transferencia",1],
+      ["2026-06-12","CAROL","BOLA",2,16000,"transferencia",1],
+      ["2026-06-12","CAROL","CERDO",1,14000,"transferencia",1],
+      ["2026-06-12","CAROL","ESPALDILLA",1,14000,"transferencia",1],
+      ["2026-06-12","CLAUDIA","TOCINO",3,5000,"transferencia",1],
+      ["2026-06-12","CLAUDIA","COSTILLA DE CERDO",1,13000,"transferencia",1],
+      ["2026-06-12","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-06-19","CLAUDIA","TOCINO",4,5000,"transferencia",1],
+      ["2026-06-19","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-06-19","CLAUDIA","ESPALDILLA",2,14000,"transferencia",1],
+      ["2026-06-19","CLAUDIA","PANCETA",1,13500,"transferencia",1],
+      ["2026-06-19","MARTHA","ESPALDILLA",1.5,14000,"efectivo",1],
+      ["2026-06-19","MARTHA","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-06-19","MARCELA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-19","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-06-19","LUCY","CERDO",1,14000,"efectivo",1],
+      ["2026-06-19","LEIDY","MOLIDA",2,14000,"transferencia",1],
+      ["2026-06-19","CAROLINA","BOLA",2,16000,"efectivo",1],
+      ["2026-06-19","CAROLINA","MOLIDA",1,14000,"efectivo",1],
+      ["2026-06-26","CAROL","BOLA",2,16000,"transferencia",1],
+      ["2026-06-26","CAROL","CERDO",2,14000,"transferencia",1],
+      ["2026-06-26","CAROL","CERDO AHUMADO",2,16500,"transferencia",1],
+      ["2026-06-26","CAROL","MOLIDA",1,14000,"transferencia",1],
+      ["2026-06-26","CAROLINA GUTIERRES","COSTILLA DE RES",1,13000,"transferencia",1],
+      ["2026-06-26","CAROLINA GUTIERRES","BOLA",1,16000,"transferencia",1],
+      ["2026-06-26","LUCY","CERDO AHUMADO",1,16500,"transferencia",1],
+      ["2026-06-26","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-06-26","PASTORA","MOLIDA",2,14000,"efectivo",1],
+      ["2026-07-03","CAROL","CERDO",2,14000,"transferencia",1],
+      ["2026-07-03","CAROL","BOLA",2,16000,"transferencia",1],
+      ["2026-07-03","CAROL","MOLIDA",1,15000,"transferencia",1],
+      ["2026-07-03","MARTHA","BOLA",2,16000,"efectivo",1],
+      ["2026-07-03","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-07-03","LUCY","BOLA",1,16000,"efectivo",1],
+      ["2026-07-03","MARCELA","CERDO AHUMADO",2,17000,"efectivo",1],
+      ["2026-07-03","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-07-03","KAREN","MOLIDA",1,14000,"efectivo",1],
+      ["2026-07-03","CAROLINA","COSTILLA AHUMADA",2,16500,"efectivo",1],
+      ["2026-07-03","CAROLINA","BOLA",1,16000,"efectivo",1],
+      ["2026-07-03","CAROLINA","MOLIDA",1,15000,"efectivo",1],
+      ["2026-07-03","CLAUDIA","COSTILLA AHUMADA",2,16500,"transferencia",1],
+      ["2026-07-03","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-07-03","CLAUDIA","ESPALDILLA",1.5,14000,"transferencia",1],
+      ["2026-07-03","MILITA","BOLA",2,16000,"efectivo",1],
+      ["2026-07-10","CAROL","BOLA",3,16000,"transferencia",1],
+      ["2026-07-10","CAROL","MOLIDA",2,14000,"transferencia",1],
+      ["2026-07-10","LUCY","CERDO",1,14000,"efectivo",1],
+      ["2026-07-10","CAROLINA","CERDO",1,14000,"efectivo",1],
+      ["2026-07-10","CAROLINA","COSTILLA DE RES",1,13000,"efectivo",1],
+      ["2026-07-10","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-07-10","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-07-10","MARTHA","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-07-10","MARTHA","BOLA",1.5,16000,"efectivo",1],
+      ["2026-07-10","CAROLINA GUTIERRES","BOLA",1,16000,"transferencia",1],
+      ["2026-07-10","CAROLINA GUTIERRES","MOLIDA",1,14000,"transferencia",1],
+      ["2026-07-10","CAROLINA GUTIERRES","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-07-17","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-07-17","CLAUDIA","BOLA",1,18000,"transferencia",1],
+      ["2026-07-17","CLAUDIA","COSTILLA AHUMADA",1.5,16500,"transferencia",1],
+      ["2026-07-17","MARIA EUGENIA","BOLA",2,16000,"efectivo",1],
+      ["2026-07-17","MARIA EUGENIA","CERDO AHUMADO",2,17000,"efectivo",1],
+      ["2026-07-17","CAROLINA","ESPALDILLA",1,15000,"efectivo",1],
+      ["2026-07-17","CAROLINA","MOLIDA",1,15000,"efectivo",1],
+      ["2026-07-17","CAROLINA","BOLA",1,16000,"efectivo",1],
+      ["2026-07-17","MARCELA","CERDO AHUMADO",4,17000,"efectivo",1],
+      ["2026-07-17","LUCY","CERDO AHUMADO",1,17000,"efectivo",1],
+      ["2026-07-17","PASTORA","BOLA",3,16000,"efectivo",1],
+      ["2026-07-17","PASTORA","ESPALDILLA",2,15000,"efectivo",1],
+      ["2026-07-18","CAROL","COSTILLA AHUMADA",2,17000,"transferencia",1],
+      ["2026-07-18","CAROL","BOLA",2,18000,"transferencia",1],
+      ["2026-07-18","CAROL","MOLIDA",1,15000,"transferencia",1],
+      ["2026-07-25","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-07-25","MARTHA","ESPALDILLA",1.5,15000,"efectivo",1],
+      ["2026-07-25","MARCIAL","CERDO AHUMADO",2,17000,"efectivo",1],
+      ["2026-07-25","LUCY","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-07-25","CAROLINA GUTIERRES","COSTILLA DE CERDO",1,13500,"efectivo",1],
+      ["2026-07-25","CAROLINA GUTIERRES","BOLA",1,18000,"efectivo",1],
+      ["2026-07-25","CAROLINA GUTIERRES","CERDO",1,14000,"efectivo",1],
+      ["2026-07-25","CAROLINA","COSTILLA AHUMADA",1,16500,"efectivo",1],
+      ["2026-07-25","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-07-25","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-07-25","MAGALY","COSTILLA AHUMADA",1,16500,"efectivo",1],
+      ["2026-07-25","MAGALY","CERDO AHUMADO",1,17000,"efectivo",1],
+      ["2026-07-25","NICOLE","CERDO AHUMADO",1,17000,"efectivo",0],
+      ["2026-07-25","CAMILA IGLESIA","CERDO AHUMADO",1,17000,"efectivo",0],
+      ["2026-07-31","CAROL","CERDO AHUMADO",3,17000,"transferencia",1],
+      ["2026-07-31","CAROL","MOLIDA",2,15000,"transferencia",1],
+      ["2026-07-31","CAROL","LOMO DE CERDO",1,15000,"transferencia",1],
+      ["2026-08-01","MARTHA","BOLA",2,18000,"efectivo",1],
+      ["2026-08-01","MARTHA","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-08-01","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-08-01","CLAUDIA","CERDO AHUMADO",1,17000,"transferencia",1],
+      ["2026-08-01","CLAUDIA","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-08-01","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-08-01","PASTORA","COSTILLA DE RES",2,13000,"efectivo",1],
+      ["2026-08-01","CAROLINA GUTIERRES","COSTILLA DE RES",1,13000,"transferencia",1],
+      ["2026-08-01","CAROLINA GUTIERRES","HUESO CARNUDO",1,11000,"transferencia",1],
+      ["2026-08-01","CAMILA","BOLA",1,18000,"transferencia",1],
+      ["2026-08-01","CAROLINA","BOLA",1,18000,"efectivo",1],
+      ["2026-08-01","CAROLINA","ESPALDILLA",1,15000,"efectivo",1],
+      ["2026-08-01","CAROLINA","MOLIDA",1,15000,"efectivo",1],
+      ["2026-08-08","CLAUDIA","CERDO",2,14000,"transferencia",1],
+      ["2026-08-08","CLAUDIA","LOMO DE CERDO",1,15000,"transferencia",1],
+      ["2026-08-08","CLAUDIA","BOLA",1,18000,"transferencia",1],
+      ["2026-08-08","CAROLINA","BOLA",2,18000,"transferencia",1],
+      ["2026-08-08","CAROLINA","MOLIDA",1,15000,"transferencia",1],
+      ["2026-08-08","CAROL","COSTILLA AHUMADA",2,16500,"transferencia",1],
+      ["2026-08-08","CAROL","LOMO DE CERDO",2,15000,"transferencia",1],
+      ["2026-08-08","CAROL","BOLA",2,18000,"transferencia",1],
+      ["2026-08-08","MARCELA","CERDO AHUMADO",4,17000,"efectivo",1],
+      ["2026-08-08","MARCELA","LOMO DE CERDO",2,15000,"efectivo",1],
+      ["2026-08-08","LUCY","LOMO DE CERDO",1,15000,"transferencia",1],
+      ["2026-08-08","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-08-08","PASTORA","ESPALDILLA",2,15000,"efectivo",1],
+      ["2026-08-08","CAMILA IGLESIA","CERDO",1,14000,"transferencia",1],
+      ["2026-08-13","CAROLINA GUTIERRES","LOMO DE CERDO",2,15000,"transferencia",1],
+      ["2026-08-13","CAROLINA GUTIERRES","BOLA",2,18000,"transferencia",1],
+      ["2026-08-13","CAROLINA GUTIERRES","COSTILLA DE RES",2,13500,"transferencia",1],
+      ["2026-08-15","CAROLINA","BOLA",3,18000,"transferencia",1],
+      ["2026-08-15","CAROLINA","MOLIDA",1,15000,"transferencia",1],
+      ["2026-08-15","CAROLINA","CERDO",1,14000,"transferencia",1],
+      ["2026-08-15","CAMILA","BOLA",1,18000,"transferencia",1],
+      ["2026-08-15","CAMILA","CERDO",1,14000,"transferencia",1],
+      ["2026-08-15","CAROLINA GUTIERRES","LOMO DE CERDO",2,15000,"transferencia",1],
+      ["2026-08-15","CAROLINA GUTIERRES","BOLA",2,18000,"transferencia",1],
+      ["2026-08-15","CAROLINA GUTIERRES","COSTILLA DE RES",2,13000,"transferencia",1],
+      ["2026-08-15","PASTORA","BOLA",6,18000,"efectivo",1],
+      ["2026-08-15","PASTORA","COSTILLA DE RES",2,13000,"efectivo",1],
+      ["2026-08-15","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-08-15","LUCY","BOLA",1,18000,"transferencia",1],
+      ["2026-08-15","LUCY","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-08-15","MARTHA","BOLA",3,18000,"efectivo",1],
+      ["2026-08-15","MARTHA","LOMO DE CERDO",2.5,15000,"efectivo",1],
+      ["2026-08-15","MARCIAL","CERDO AHUMADA",2,17000,"efectivo",1],
+      ["2026-08-15","CLAUDIA","CERDO AHUMADA",3,17000,"transferencia",1],
+      ["2026-08-15","CLAUDIA","COSTILLA AHUMADA",3,16500,"transferencia",1],
+      ["2026-08-15","CLAUDIA","MOLIDA",1,15000,"transferencia",1],
+      ["2026-08-15","CLAUDIA","TOCINO",1,4000,"transferencia",1],
+      ["2026-08-15","CLAUDIA","COSTILLA DE RES",2,13000,"transferencia",1],
+      ["2026-08-15","CLAUDIA","PANCETA",2,13500,"transferencia",1],
+      ["2026-08-15","CLAUDIA","LOMO DE CERDO",2,15000,"transferencia",1],
+      ["2026-08-15","KAREN","MOLIDA",1,15000,"transferencia",1],
+      ["2026-08-15","KAREN","GRASA",1,4000,"transferencia",1],
+      ["2026-08-28","MARCELA","CERDO AHUMADA",2,17000,"transferencia",1],
+      ["2026-08-28","MARCELA","BOLA",2,18000,"transferencia",1],
+      ["2026-08-29","CAROL","MOLIDA",3,15000,"transferencia",1],
+      ["2026-08-29","CAROL","CERDO AHUMADA",3,17000,"transferencia",1],
+      ["2026-08-29","CAROL","CERDO",2,14000,"transferencia",1],
+      ["2026-08-29","CAROL","BOLA",2,18000,"transferencia",1],
+      ["2026-08-29","MARTHA","BOLA",1.5,18000,"efectivo",1],
+      ["2026-08-29","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-08-29","LUCY","COSTILLA AHUMADA",1,16500,"efectivo",1],
+      ["2026-08-29","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-08-29","PASTORA","ESPALDILLA",2,15000,"efectivo",1],
+      ["2026-08-29","CLAUDIA","CERDO",3,14000,"transferencia",1],
+      ["2026-08-29","CLAUDIA","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-08-29","CLAUDIA","ESPALDILLA",1,15000,"transferencia",1],
+      ["2026-08-29","CLAUDIA","TOCINO",3,5000,"transferencia",1],
+      ["2026-09-04","CAROL","CERDO AHUMADA",3,17000,"transferencia",1],
+      ["2026-09-04","CAROL","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-09-04","CAROL","MOLIDA",1,15000,"transferencia",1],
+      ["2026-09-04","LUCY","BOLA",1,18000,"transferencia",1],
+      ["2026-09-04","MARTHA","ESPALDILLA",1,15000,"transferencia",1],
+      ["2026-09-04","MARTHA","LOMO DE CERDO",1.5,15000,"transferencia",1],
+      ["2026-09-04","MARTHA","BOLA",1,18000,"transferencia",1],
+      ["2026-09-04","MAGALY","CERDO",1,14000,"efectivo",1],
+      ["2026-09-04","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-09-04","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-09-05","KAREN","MOLIDA",1,15000,"efectivo",1],
+      ["2026-09-12","CAROL","MOLIDA",2,15000,"efectivo",1],
+      ["2026-09-12","CAROL","BOLA",2,18000,"efectivo",1],
+      ["2026-09-12","CAMILA IGLESIA","BOLA",1,18000,"transferencia",1],
+      ["2026-09-12","CAMILA IGLESIA","CERDO",1,14000,"transferencia",1],
+      ["2026-09-12","CAROLINA GUTIERRES","COSTILLA DE RES",1,13500,"transferencia",1],
+      ["2026-09-12","CAROLINA GUTIERRES","BOLA",1,18000,"transferencia",1],
+      ["2026-09-12","CAROLINA GUTIERRES","CERDO",1,14000,"transferencia",1],
+      ["2026-09-12","LUCY","BOLA",1,18000,"transferencia",1],
+      ["2026-09-12","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-09-12","PASTORA","COSTILLA DE RES",1,27000,"efectivo",1],
+      ["2026-09-12","PIZZA","ESPALDILLA",1,15000,"efectivo",1],
+      ["2026-09-12","CAROLINA","BOLA",2,18000,"efectivo",1],
+      ["2026-09-12","CLAUDIA","COSTILLA AHUMADA",1,16500,"transferencia",1],
+      ["2026-09-12","CLAUDIA","PANCETA",2,13000,"transferencia",1],
+      ["2026-09-12","CLAUDIA","MOLIDA",1,15000,"efectivo",0],
+      ["2026-09-12","CLAUDIA","CERDO",3,14000,"efectivo",0],
+      ["2026-09-12","CLAUDIA","ESPALDILLA",1,15000.23,"efectivo",0],
+      ["2026-09-19","CAROL","MOLIDA",2,15000,"transferencia",1],
+      ["2026-09-19","CAROL","BOLA",2,18000,"transferencia",1],
+      ["2026-09-19","MARTHA","ESPALDILLA",1.5,15000,"efectivo",1],
+      ["2026-09-19","MARTHA","CERDO",1,14000,"efectivo",1],
+      ["2026-09-19","MARCELA","BOLA",2,18000,"efectivo",1],
+      ["2026-09-19","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-09-19","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-09-19","LUCY","BOLA",1,18000,"transferencia",1],
+      ["2026-09-19","CLAUDIA","CERDO",4,14000,"efectivo",0],
+      ["2026-09-19","CLAUDIA","PANCETA",1,13500,"efectivo",0],
+      ["2026-09-19","CLAUDIA","COSTILLA DE CERDO",1,13500,"efectivo",0],
+      ["2026-09-24","CAMILA IGLESIA","CERDO",1,14000,"transferencia",1],
+      ["2026-09-24","CAMILA IGLESIA","BOLA",1,18000,"transferencia",1],
+      ["2026-09-26","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-09-26","PASTORA","ESPALDILLA",2,15000,"efectivo",1],
+      ["2026-09-26","MARCELA","CERDO AHUMADO",4,17000,"efectivo",1],
+      ["2026-09-26","MARCELA","COSTILLA AHUMADA",2,16500,"efectivo",1],
+      ["2026-09-26","LUCY","CERDO AHUMADO",1,17000,"transferencia",1],
+      ["2026-09-26","CAROL","CERDO AHUMADO",5,17000,"transferencia",1],
+      ["2026-09-26","CAROL","COSTILLA AHUMADA",2,16500,"transferencia",1],
+      ["2026-09-26","KAREN","MOLIDA",1,15000,"efectivo",1],
+      ["2026-09-26","MARCIAL","CERDO AHUMADA",2,17000,"efectivo",1],
+      ["2026-09-26","MARTHA","BOLA",1.5,18000,"efectivo",1],
+      ["2026-09-26","MARTHA","LOMO DE CERDO",1.5,15000,"efectivo",1],
+      ["2026-09-26","CAROLINA","CERDO",2,14000,"transferencia",1],
+      ["2026-09-26","CAROLINA","MOLIDA",1,15000,"transferencia",1],
+      ["2026-09-26","CAMILA","MOLIDA",1,15000,"transferencia",1],
+      ["2026-09-26","MAICOL","CERDO AHUMADO",1,17000,"transferencia",1],
+      ["2026-10-03","NATALIA","MOLIDA",2,15000,"transferencia",1],
+      ["2026-10-03","NATALIA","ESPALDILLA",1,15000,"transferencia",1],
+      ["2026-10-03","CAROLINA GAVIRIA","BOLA",1,18000,"efectivo",1],
+      ["2026-10-03","CAROLINA GAVIRIA","CERDO",1,14000,"efectivo",1],
+      ["2026-10-03","CAROLINA GAVIRIA","MOLIDA",1,15000,"efectivo",1],
+      ["2026-10-03","CAROL","BOLA",1,18000,"transferencia",1],
+      ["2026-10-03","CAROL","CERDO",2,14000,"transferencia",1],
+      ["2026-10-03","MARTHA","LOMO DE CERDO",2,15000,"efectivo",1],
+      ["2026-10-03","CAROLINA","MOLIDA",1,15000,"efectivo",1],
+      ["2026-10-03","CAROLINA","ESPALDILLA",1,15000,"efectivo",1],
+      ["2026-10-03","CAROLINA","BOLA",1,18000,"efectivo",1],
+      ["2026-10-03","LUCY","CERDO",1,14000,"efectivo",1],
+      ["2026-10-03","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-10-03","PASTORA","COSTILLA DE RES",2,13000,"efectivo",1],
+      ["2026-10-03","CAMILA","BOLA",1,18000,"efectivo",0],
+      ["2026-10-03","CAMILA","CERDO",1,14000,"efectivo",0],
+      ["2026-10-10","KAREN","PEPINO",1,13000,"efectivo",0],
+      ["2026-10-10","KAREN","MOLIDA",2,15000,"efectivo",0],
+      ["2026-10-10","MARTHA","ESPALDILLA",2,15000,"efectivo",1],
+      ["2026-10-10","MARTHA","LOMO DE CERDO",1,15000,"efectivo",1],
+      ["2026-10-10","CAROL","BOLA",3,18000,"efectivo",0],
+      ["2026-10-10","CAROL","CERDO",2,14000,"efectivo",0],
+      ["2026-10-10","CLAUDIA","ESPALDILLA",1,15000,"efectivo",0],
+      ["2026-10-10","CLAUDIA","CERDO",1,14000,"efectivo",0],
+      ["2026-10-10","CLAUDIA","BOLA",1,18000,"efectivo",0],
+      ["2026-10-10","LUCY","BOLA",1,18000,"efectivo",1],
+      ["2026-10-10","PASTORA","BOLA",3,18000,"efectivo",1],
+      ["2026-10-10","PASTORA","MOLIDA",2,15000,"efectivo",1],
+      ["2026-10-10","CAROLINA GAVIRIA","CERDO",1.5,14000,"efectivo",0]
+      ];
+      const SYNC_COMPRAS = [
+      ["2026-05-22","COSTILLA AHUMADA",7,9000],
+      ["2026-05-22","BOLA",8,12000],
+      ["2026-05-22","CERDO AHUMADO",12,10000],
+      ["2026-05-29","BOLA",19,12000],
+      ["2026-05-29","MOLIDA",6,10000],
+      ["2026-05-29","ESPALDILLA",1,10000],
+      ["2026-06-12","BOLA",8,12000],
+      ["2026-06-12","MOLIDA",5,10000],
+      ["2026-06-12","ESPALDILLA",5,10000],
+      ["2026-06-12","COSTILLA DE RES",3,9000],
+      ["2026-06-12","CERDO",6,10000],
+      ["2026-06-12","COSTILLA DE CERDO",2,9000],
+      ["2026-06-12","TOCINO",3,4000],
+      ["2026-06-19","BOLA",14,12000],
+      ["2026-06-19","MOLIDA",6,10000],
+      ["2026-06-19","ESPALDILLA",3,10000],
+      ["2026-06-19","CERDO",6,10000],
+      ["2026-06-19","TOCINO",4,4000],
+      ["2026-06-19","PANCETA",2,9000],
+      ["2026-06-19","LOMO DE CERDO",2,10000],
+      ["2026-06-26","LOMO DE CERDO",3,10000],
+      ["2026-06-26","COSTILLA AHUMADA",10.5,9000],
+      ["2026-06-26","CERDO AHUMADO",6,10000],
+      ["2026-07-03","BOLA",17,12000],
+      ["2026-07-03","MOLIDA",6,10000],
+      ["2026-07-03","CERDO",10,10000],
+      ["2026-07-03","LOMO DE CERDO",3,10000],
+      ["2026-07-16","COSTILLA AHUMADA",14,8000],
+      ["2026-07-16","CERDO AHUMADO",18,11100],
+      ["2026-07-16","LOMO DE CERDO",10,10000],
+      ["2026-07-16","COSTILLA DE CERDO",4,8000],
+      ["2026-07-16","PANCETA",4,8000],
+      ["2026-07-17","BOLA",18,12000],
+      ["2026-07-17","MOLIDA",6,10000],
+      ["2026-07-17","ESPALDILLA",5,10000],
+      ["2026-07-19","LOMO DE CERDO",5.5,10000],
+      ["2026-07-19","CERDO",10.5,10000],
+      ["2026-07-19","MOLIDA",3,10000],
+      ["2026-07-19","COSTILLA DE RES",1,9000],
+      ["2026-07-19","BOLA",9.5,12000],
+      ["2026-07-19","ESPALDILLA",3,0],
+      ["2026-07-19","TOCINO",1.5,0],
+      ["2026-07-30","CERDO",4,10000],
+      ["2026-07-30","LOMO DE CERDO",5,10000],
+      ["2026-07-30","CERDO AHUMADO",18,11111],
+      ["2026-07-31","BOLA",15,12000],
+      ["2026-07-31","ESPALDILLA",2,10000],
+      ["2026-07-31","MOLIDA",4,10000],
+      ["2026-07-31","HUESO CARNUDO",2,7000],
+      ["2026-07-31","COSTILLA DE RES",5,9000],
+      ["2026-08-28","BOLA",18,12000],
+      ["2026-08-28","ESPALDILLA",4,10000],
+      ["2026-08-28","MOLIDA",7,10000],
+      ["2026-08-28","COSTILLA DE RES",2,18000],
+      ["2026-08-28","CERDO",7,10000],
+      ["2026-08-28","LOMO DE CERDO",3,10000],
+      ["2026-09-15","BOLA",16,12000],
+      ["2026-09-15","CERDO",10,10000],
+      ["2026-09-15","MOLIDA",7,10000],
+      ["2026-09-15","ESPALDILLA",3,10000],
+      ["2026-09-15","COSTILLA DE RES",3,9000],
+      ["2026-09-18","COSTILLA AHUMADA",10,8000],
+      ["2026-09-18","CERDO AHUMADO",18.5,11900],
+      ["2026-09-18","CERDO",12,10000],
+      ["2026-09-27","BOLA",16,12000],
+      ["2026-09-27","LOMO DE CERDO",5,10000],
+      ["2026-09-27","MOLIDA",7,10000],
+      ["2026-09-27","ESPALDILLA",4,10000],
+      ["2026-09-27","COSTILLA DE RES",2,9000],
+      ["2026-10-09","BOLA",15,12000],
+      ["2026-10-09","MOLIDA",8,10000],
+      ["2026-10-09","ESPALDILLA",6,10000],
+      ["2026-10-09","PEPINO",1,10000],
+      ["2026-10-09","CERDO",5.5,10000],
+      ["2026-10-09","LOMO DE CERDO",4,10000]
+      ];
+      const SYNC_GASTOS = [
+      ["2026-06-06","DIEZMO",10000],
+      ["2026-06-06","INDRIVER",10000],
+      ["2026-06-13","DIEZMO",10000],
+      ["2026-06-13","INDRIVER",10000],
+      ["2026-06-17","SUELDO",150000],
+      ["2026-06-20","INDRIVER",10000],
+      ["2026-06-20","DIEZMO",10000],
+      ["2026-06-20","ADOBO",5000],
+      ["2026-06-24","ENCOMIENDA POLLO",15000],
+      ["2026-06-24","SPOTIFY",5000],
+      ["2026-06-24","BOLSAS POLLO",6000],
+      ["2026-07-01","DOMI PASTORA",9000],
+      ["2026-07-02","ENCOMIENDA POLLO",15000],
+      ["2026-07-04","DIEZMO",10000],
+      ["2026-07-04","INDRIVER",10000],
+      ["2026-07-04","RIFA KAREN",10000],
+      ["2026-07-18","DIEZMO",10000],
+      ["2026-07-18","INDRIVER",10000],
+      ["2026-07-22","SUELDO",150000],
+      ["2026-07-25","INDRIVER",8000],
+      ["2026-07-25","DIEZMO",10000],
+      ["2026-08-01","DOLARCITY",11000],
+      ["2026-08-01","INDRIVER",10000],
+      ["2026-08-01","DIEZMO",10000],
+      ["2026-08-02","PLAN CELULAR",43000],
+      ["2026-08-08","INDRIVER",20000],
+      ["2026-08-08","DIEZMO",10000],
+      ["2026-08-08","COMIDA",15000],
+      ["2026-08-28","INDRIVER",20000],
+      ["2026-08-28","DIEZMO",10000],
+      ["2026-08-28","PAGO SUELDO SOL",150000],
+      ["2026-09-12","INDRIVER",10000],
+      ["2026-09-12","DIEZMO",10000],
+      ["2026-09-19","DIEZMO",10000],
+      ["2026-09-19","INDRIVER",10000],
+      ["2026-09-26","INDRIVER",10000],
+      ["2026-09-26","DIEZMO",10000],
+      ["2026-09-26","PELUQUEADA",20000],
+      ["2026-09-26","MERCADO",84000],
+      ["2026-09-26","PIZZA",5000],
+      ["2026-10-06","BOLSAS SIPLO",18000],
+      ["2026-10-06","BOLSA NEGRA INDUSTRIAL",5000],
+      ["2026-10-06","SPOTY DOS MESES",10000],
+      ["2026-10-10","INDRIVER",10000],
+      ["2026-10-10","DIEZMO",10000]
+      ];
+      ventas = SYNC_VENTAS.map(r=>{
+        const o = { id: uid(), fecha:r[0], cliente:r[1], tipo:r[2], libras:r[3], precioLibra:r[4], metodoPago:r[5], pagado: !!r[6] };
+        if(!r[6]) o.montoPagado = 0;
+        return o;
+      }).concat(ventas.filter(v => v.fecha && v.fecha > "2026-10-10"));
+      compras = SYNC_COMPRAS.map(r=>({ id: uid(), fecha:r[0], tipo:r[1], libras:r[2], costoLibra:r[3] }))
+        .concat(compras.filter(c => c.fecha && c.fecha > "2026-10-10"));
+      gastos = SYNC_GASTOS.map(r=>({ id: uid(), fecha:r[0], concepto:r[1], monto:r[2] }))
+        .concat(gastos.filter(g => g.fecha && g.fecha > "2026-10-10"));
+      cambioVentas = true; cambioCompras = true; cambioGastos = true;
+      try{ localStorage.setItem(KEY_SYNC_PDF, "1"); }catch(e){}
+    }
+    if(cambioCompras) await guardarCompras();
+    if(cambioVentas) await guardarVentas();
+    if(cambioGastos) await guardarGastos();
+  }
+
+  async function guardarCompras(){ try{ localStorage.setItem(KEY_COMPRAS, JSON.stringify(compras)); pedirSync(); }catch(e){ console.error(e); } }
+  async function guardarVentas(){ try{ localStorage.setItem(KEY_VENTAS, JSON.stringify(ventas)); pedirSync(); }catch(e){ console.error(e); } }
+  async function guardarGastos(){ try{ localStorage.setItem(KEY_GASTOS, JSON.stringify(gastos)); pedirSync(); }catch(e){ console.error(e); } }
+  function flashMsg(id, texto){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = texto;
+    setTimeout(()=>{ if(el) el.textContent = ""; }, 2000);
+  }
+
+  // ---------- Cálculos ----------
+  function costoPromedioPorTipo(){
+    const acc = {};
+    compras.forEach(c=>{
+      if(!acc[c.tipo]) acc[c.tipo] = { libras:0, costo:0 };
+      acc[c.tipo].libras += c.libras;
+      acc[c.tipo].costo += c.libras * c.costoLibra;
+    });
+    const prom = {};
+    Object.keys(acc).forEach(t=>{ prom[t] = acc[t].libras > 0 ? acc[t].costo / acc[t].libras : 0; });
+    return prom;
+  }
+
+  function inventarioPorTipo(){
+    const prom = costoPromedioPorTipo();
+    const inv = {};
+    compras.forEach(c=>{ inv[c.tipo] = (inv[c.tipo]||0) + c.libras; });
+    ventas.forEach(v=>{ inv[v.tipo] = (inv[v.tipo]||0) - v.libras; if(!(v.tipo in prom)) prom[v.tipo] = 0; });
+    return inv;
+  }
+
+  function gananciaVenta(v, prom){
+    const costo = (prom && (v.tipo in prom)) ? prom[v.tipo] : 0;
+    return v.libras * (v.precioLibra - costo);
+  }
+
+  // Monto que el cliente ya pagó de esta venta (soporta ventas viejas que solo tenían pagado:true/false)
+  function montoPagadoVenta(v){
+    const total = v.libras * v.precioLibra;
+    if(v.montoPagado !== undefined && v.montoPagado !== null){
+      return Math.max(0, Math.min(v.montoPagado, total));
+    }
+    return v.pagado !== false ? total : 0;
+  }
+
+  // 'pagado' | 'abono' | 'pendiente'
+  function estadoVenta(v){
+    const total = v.libras * v.precioLibra;
+    const pag = montoPagadoVenta(v);
+    if(pag <= 0.004) return 'pendiente';
+    if(pag >= total - 0.004) return 'pagado';
+    return 'abono';
+  }
+
+  function librasVendidasPorTipo(listaVentas){
+    const acc = {};
+    listaVentas.forEach(v=>{ acc[v.tipo] = (acc[v.tipo]||0) + v.libras; });
+    return acc;
+  }
+
+  function resumenMes(mesK){
+    const comprasMes = compras.filter(c => mesKey(c.fecha) === mesK);
+    const ventasMes = ventas.filter(v => mesKey(v.fecha) === mesK);
+    const gastosMes = gastos.filter(g => mesKey(g.fecha) === mesK);
+    const prom = costoPromedioPorTipo();
+    let ganancia = 0, ventasTotal = 0, librasVendidas = 0, librasCompradas = 0, costoCompras = 0;
+    let totalEfectivo = 0, totalTransferencia = 0, totalPendiente = 0;
+    ventasMes.forEach(v=>{
+      const monto = v.libras * v.precioLibra;
+      const pagadoMonto = montoPagadoVenta(v);
+      const saldo = Math.max(monto - pagadoMonto, 0);
+      ganancia += gananciaVenta(v, prom);
+      ventasTotal += monto;
+      librasVendidas += v.libras;
+      totalPendiente += saldo;
+      if(pagadoMonto > 0){
+        if((v.metodoPago||'efectivo') === 'transferencia'){ totalTransferencia += pagadoMonto; }
+        else { totalEfectivo += pagadoMonto; }
+      }
+    });
+    comprasMes.forEach(c=>{ librasCompradas += c.libras; costoCompras += c.libras * c.costoLibra; });
+    const totalGastos = gastosMes.reduce((s,g)=> s + g.monto, 0);
+    const neto = ganancia - totalGastos;
+    return { comprasMes, ventasMes, gastosMes, ganancia, ventasTotal, librasVendidas, librasCompradas, costoCompras, totalGastos, neto, totalEfectivo, totalTransferencia, totalPendiente };
+  }
+
+  // Suma todo lo que compró cada cliente en el mes (res, cerdo, costilla, etc juntos)
+  function totalesPorCliente(ventasMes){
+    const acc = {};
+    ventasMes.forEach(v=>{
+      const total = v.libras * v.precioLibra;
+      const pagado = montoPagadoVenta(v);
+      const saldo = Math.max(total - pagado, 0);
+      if(!acc[v.cliente]) acc[v.cliente] = { libras:0, total:0, pagado:0, saldo:0 };
+      acc[v.cliente].libras += v.libras;
+      acc[v.cliente].total += total;
+      acc[v.cliente].pagado += pagado;
+      acc[v.cliente].saldo += saldo;
+    });
+    return acc;
+  }
+
+  function mesesDisponibles(){
+    const set = new Set();
+    compras.forEach(c=> set.add(mesKey(c.fecha)));
+    ventas.forEach(v=> set.add(mesKey(v.fecha)));
+    gastos.forEach(g=> set.add(mesKey(g.fecha)));
+    return Array.from(set).filter(Boolean).sort().reverse();
+  }
+
+  function cuentasPorCobrar(){
+    const porCliente = {};
+    ventas.forEach(v=>{
+      const total = v.libras * v.precioLibra;
+      const saldo = total - montoPagadoVenta(v);
+      if(saldo > 0.004){
+        if(!porCliente[v.cliente]) porCliente[v.cliente] = { total: 0, items: [] };
+        porCliente[v.cliente].total += saldo;
+        porCliente[v.cliente].items.push(v);
+      }
+    });
+    return porCliente;
+  }
+
+  // Junta en un solo "recibo" todas las líneas de una misma venta (res, cerdo, costilla...)
+  // Determina "Semana 1", "Semana 2"... NO según el calendario, sino según la fecha de la primera
+  // venta que se haya anotado alguna vez. Esa fecha es siempre la Semana 1, y cada bloque de 7 días
+  // hacia adelante es la semana siguiente (Semana 2, Semana 3...), sin reiniciar al cambiar de mes.
+  function primeraFechaVenta(){
+    if(ventas.length === 0) return null;
+    return ventas.reduce((min, v) => (v.fecha && v.fecha < min ? v.fecha : min), ventas[0].fecha);
+  }
+
+  function diasEntreFechas(fechaA, fechaB){
+    const [ya,ma,da] = fechaA.split('-').map(Number);
+    const [yb,mb,db] = fechaB.split('-').map(Number);
+    const msA = Date.UTC(ya, ma-1, da);
+    const msB = Date.UTC(yb, mb-1, db);
+    return Math.round((msB - msA) / 86400000);
+  }
+
+  function sumarDiasAFecha(fechaStr, dias){
+    const [y,m,d] = fechaStr.split('-').map(Number);
+    const dt = new Date(Date.UTC(y, m-1, d));
+    dt.setUTCDate(dt.getUTCDate() + dias);
+    return dt;
+  }
+
+  function fmtFechaCorta(dt){
+    const meses = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+    return `${dt.getUTCDate()} ${meses[dt.getUTCMonth()]}`;
+  }
+
+  function semanaDeFecha(fechaStr){
+    const primera = primeraFechaVenta() || fechaStr;
+    const diff = diasEntreFechas(primera, fechaStr);
+    const semanaNum = Math.floor(Math.max(diff, 0) / 7) + 1;
+    const inicio = sumarDiasAFecha(primera, (semanaNum-1)*7);
+    const fin = sumarDiasAFecha(primera, (semanaNum-1)*7 + 6);
+    const key = `S${semanaNum}`;
+    const rangoTexto = `${fmtFechaCorta(inicio)} – ${fmtFechaCorta(fin)}`;
+    return { key, semanaNum, rangoTexto };
+  }
+
+  function claveGrupoVenta(v){ return v.grupoId || (v.fecha + '||' + v.cliente); }
+
+  function agruparVentas(lista){
+    const grupos = {};
+    const orden = [];
+    lista.forEach(v=>{
+      const key = claveGrupoVenta(v);
+      if(!grupos[key]){ grupos[key] = { key, fecha: v.fecha, cliente: v.cliente, items: [] }; orden.push(key); }
+      grupos[key].items.push(v);
+    });
+    return orden.map(k=>grupos[k]);
+  }
+
+  // ---------- Panel Inventario ----------
+  function renderInventario(){
+    const p = document.getElementById('panel-inventario');
+    const inv = inventarioPorTipo();
+    const tipos = Object.keys(inv);
+    p.innerHTML = `
+      <div class="card">
+        <h2>Inventario actual (libras disponibles por tipo)</h2>
+        ${tipos.length===0 ? '<div class="empty">Sin datos todavía.</div>' : `
+        <div class="stat-grid">
+          ${tipos.sort().map(t=>`
+            <div class="stat ${inv[t]<0 ? 'rojo':''}">
+              <div class="label">${t}</div>
+              <div class="val">${fmt(inv[t])} lb</div>
+            </div>`).join('')}
+        </div>
+        <div class="helptext">Inventario = libras compradas acumuladas − libras vendidas acumuladas, por tipo de carne. Negativo significa que se vendió más de lo que aparece comprado.</div>
+        `}
+      </div>
+    `;
+  }
+
+  // ---------- Panel Gastos ----------
+  function renderGastos(){
+    const p = document.getElementById('panel-gastos');
+    const scrollVentanaAnterior = window.scrollY;
+    const hoy = new Date().toISOString().slice(0,10);
+    const ordenados = [...gastos].sort((a,b)=> b.fecha.localeCompare(a.fecha));
+    p.innerHTML = `
+      <div class="card">
+        <h2>Anotar gasto</h2>
+        <div class="grid">
+          <div><label>Fecha</label><input type="date" id="in-gfecha" value="${hoy}"></div>
+          <div><label>Concepto</label><input type="text" id="in-gconcepto" placeholder="Ej: Servicios, transporte, empaques"></div>
+          <div><label>Monto</label><input type="number" step="0.01" min="0" id="in-gmonto" placeholder="0.00"></div>
+        </div>
+        <div class="btn-row"><button class="btn" id="btn-guardar-gasto">Guardar gasto</button></div>
+        <div class="save-msg" id="msg-gasto"></div>
+      </div>
+      <div class="card">
+        <h2>Historial de gastos</h2>
+        ${ordenados.length===0 ? '<div class="empty">Aún no hay gastos registrados.</div>' : `
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th><th></th></tr></thead>
+          <tbody>${ordenados.map(g=>`<tr><td>${g.fecha}</td><td>${g.concepto}</td><td class="num">${money(g.monto)}</td><td class="num"><span class="del" data-del-gasto="${g.id}">✕</span></td></tr>`).join('')}</tbody>
+        </table></div>`}
+      </div>
+    `;
+    requestAnimationFrame(()=> window.scrollTo(0, scrollVentanaAnterior));
+    document.getElementById('btn-guardar-gasto').addEventListener('click', async ()=>{
+      const fecha = document.getElementById('in-gfecha').value;
+      const concepto = document.getElementById('in-gconcepto').value.trim();
+      const monto = parseFloat(document.getElementById('in-gmonto').value) || 0;
+      if(!fecha || !concepto){ flashMsg('msg-gasto','Falta la fecha o el concepto.'); return; }
+      gastos.push({ id: uid(), fecha, concepto, monto });
+      await guardarGastos();
+      render();
+      activeTab = 'gastos';
+      document.querySelector('[data-tab="gastos"]').classList.add('active');
+      flashMsg('msg-gasto', 'Gasto guardado.');
+    });
+    document.querySelectorAll('.del[data-del-gasto]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        gastos = gastos.filter(g => g.id !== el.dataset.delGasto);
+        await guardarGastos();
+        render();
+      });
+    });
+  }
+
+  // ---------- Panel Resumen Mensual ----------
+  function renderResumen(){
+    const p = document.getElementById('panel-resumen');
+    const scrollVentanaAnterior = window.scrollY;
+    const meses = mesesDisponibles();
+    if(!mesResumenActual || !meses.includes(mesResumenActual)){ mesResumenActual = meses[0] || null; }
+    if(meses.length === 0){
+      p.innerHTML = `<div class="card"><div class="empty">Agrega compras, ventas o gastos para ver el resumen mensual.</div></div>`;
+      return;
+    }
+    const r = resumenMes(mesResumenActual);
+    const totalesTipoMes = librasVendidasPorTipo(r.ventasMes);
+    const tiposMes = Object.keys(totalesTipoMes);
+    const totalesClienteMes = totalesPorCliente(r.ventasMes);
+    const prom = costoPromedioPorTipo();
+
+    // Semanas del mes seleccionado, ordenadas de la Semana 1 en adelante
+    const semanasInfo = {};
+    r.ventasMes.forEach(v=>{
+      const info = semanaDeFecha(v.fecha);
+      if(!semanasInfo[info.key]) semanasInfo[info.key] = info;
+    });
+    const semanasDisponibles = Object.keys(semanasInfo).sort((a,b)=> semanasInfo[a].semanaNum - semanasInfo[b].semanaNum);
+    if(!semanaResumenActual || !semanasDisponibles.includes(semanaResumenActual)){
+      semanaResumenActual = semanasDisponibles[0] || null;
+    }
+    const ventasSemana = semanaResumenActual
+      ? r.ventasMes.filter(v => semanaDeFecha(v.fecha).key === semanaResumenActual)
+      : r.ventasMes;
+
+    p.innerHTML = `
+      <div class="card">
+        <h2>Selecciona el mes</h2>
+        <div class="month-select">
+          <select id="sel-mes-resumen">
+            ${meses.map(m=>`<option value="${m}" ${m===mesResumenActual?'selected':''}>${mesLabel(m)}</option>`).join('')}
+          </select>
+          <button class="btn secundario peq" id="btn-descargar-pdf" type="button">⬇ Descargar PDF</button>
+        </div>
+        <div class="stat-grid">
+          <div class="stat verde"><div class="label">Ganancia bruta del mes</div><div class="val">${money(r.ganancia)}</div></div>
+          <div class="stat"><div class="label">Total vendido (libras)</div><div class="val">${fmt(r.librasVendidas)} lb</div></div>
+          <div class="stat oro"><div class="label">Ventas totales ($)</div><div class="val">${money(r.ventasTotal)}</div></div>
+          <div class="stat rojo"><div class="label">Gastos del mes</div><div class="val">${money(r.totalGastos)}</div></div>
+        </div>
+        <div class="stat-grid" style="grid-template-columns:1fr;">
+          <div class="stat" style="background:${r.neto>=0?'var(--verde)':'var(--sangre)'};">
+            <div class="label">Ganancia neta (ganancia − gastos)</div>
+            <div class="val">${money(r.neto)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Cómo cobraste este mes</h2>
+        <div class="stat-grid">
+          <div class="stat"><div class="label">Efectivo</div><div class="val">${money(r.totalEfectivo)}</div></div>
+          <div class="stat" style="background:#2b4d78;"><div class="label">Transferencia</div><div class="val">${money(r.totalTransferencia)}</div></div>
+          <div class="stat rojo"><div class="label">Pendiente por cobrar</div><div class="val">${money(r.totalPendiente)}</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Libras vendidas por tipo — ${mesLabel(mesResumenActual)}</h2>
+        ${tiposMes.length===0 ? '<div class="empty">Sin ventas este mes.</div>' : `
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Tipo de carne</th><th>Libras vendidas</th></tr></thead>
+          <tbody>
+            ${tiposMes.sort().map(t=>`<tr><td>${t}</td><td class="num">${fmt(totalesTipoMes[t])} lb</td></tr>`).join('')}
+            <tr class="total-row"><td>Total</td><td class="num">${fmt(r.librasVendidas)} lb</td></tr>
+          </tbody>
+        </table></div>`}
+      </div>
+
+      <div class="card">
+        <h2>Total por cliente — ${mesLabel(mesResumenActual)}</h2>
+        ${Object.keys(totalesClienteMes).length===0 ? '<div class="empty">Sin ventas este mes.</div>' : `
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Cliente</th><th>Libras (todas las carnes)</th><th>Total venta</th><th>Pagado</th><th>Debe</th></tr></thead>
+          <tbody>
+            ${Object.keys(totalesClienteMes).sort().map(c=>{
+              const t = totalesClienteMes[c];
+              return `<tr><td><span class="cliente-tag">${c}</span></td><td class="num">${fmt(t.libras)} lb</td><td class="num">${money(t.total)}</td><td class="num">${money(t.pagado)}</td><td class="num ${t.saldo>0.004?'neg':''}">${t.saldo>0.004?money(t.saldo):'—'}</td></tr>`;
+            }).join('')}
+            <tr class="total-row"><td>Total</td><td class="num">${fmt(r.librasVendidas)} lb</td><td class="num">${money(r.ventasTotal)}</td><td class="num">${money(r.totalEfectivo + r.totalTransferencia)}</td><td class="num">${money(r.totalPendiente)}</td></tr>
+          </tbody>
+        </table></div>`}
+      </div>
+
+      <div class="card">
+        <h2>Ventas por cliente — ${mesLabel(mesResumenActual)}</h2>
+        ${r.ventasMes.length===0 ? '<div class="empty">Sin ventas este mes.</div>' : `
+        <div class="helptext" style="margin-bottom:8px;">Elige una semana para ver solo las ventas de esos días.</div>
+        <div class="month-select" style="margin-bottom:14px;">
+          <select id="sel-semana-resumen">
+            ${semanasDisponibles.map(k=>{
+              const info = semanasInfo[k];
+              return `<option value="${k}" ${k===semanaResumenActual?'selected':''}>Semana ${info.semanaNum} · ${info.rangoTexto}</option>`;
+            }).join('')}
+          </select>
+        </div>
+        ${ventasSemana.length===0 ? '<div class="empty">Sin ventas en esta semana.</div>' : `
+        <div class="${ventasSemana.length > 12 ? 'scroll-box' : ''}"><table>
+          <thead><tr><th>Fecha</th><th>Cliente</th><th>Carne</th><th>Libras</th><th>Total</th><th>Ganancia</th><th>Método</th><th>Estado</th></tr></thead>
+          <tbody>
+            ${[...ventasSemana].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(v=>{
+              const g = gananciaVenta(v, prom);
+              const metodo = v.metodoPago || 'efectivo';
+              const total = v.libras * v.precioLibra;
+              const estado = estadoVenta(v);
+              const saldo = Math.max(total - montoPagadoVenta(v), 0);
+              const etiquetaEstado = estado === 'pagado' ? 'Pagado' : estado === 'abono' ? `Abono · debe ${money(saldo)}` : 'Pendiente';
+              return `<tr><td>${v.fecha}</td><td><span class="cliente-tag">${v.cliente}</span></td><td>${v.tipo}</td><td class="num">${fmt(v.libras)} lb</td><td class="num">${money(total)}</td><td class="num ${g>=0?'pos':'neg'}">${money(g)}</td><td><span class="metodo-tag ${metodo}">${metodo==='transferencia'?'Transferencia':'Efectivo'}</span></td><td><span class="estado-tag ${estado}" style="cursor:default;">${etiquetaEstado}</span></td></tr>`;
+            }).join('')}
+          </tbody>
+        </table></div>`}`}
+      </div>
+
+      <div class="card">
+        <h2>Compras — ${mesLabel(mesResumenActual)}</h2>
+        ${r.comprasMes.length===0 ? '<div class="empty">Sin compras este mes.</div>' : `
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Fecha</th><th>Carne</th><th>Libras</th><th>Costo total</th></tr></thead>
+          <tbody>
+            ${[...r.comprasMes].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(c=>`<tr><td>${c.fecha}</td><td>${c.tipo}</td><td class="num">${fmt(c.libras)} lb</td><td class="num">${money(c.libras*c.costoLibra)}</td></tr>`).join('')}
+          </tbody>
+        </table></div>`}
+      </div>
+
+      <div class="card">
+        <h2>Gastos — ${mesLabel(mesResumenActual)}</h2>
+        ${r.gastosMes.length===0 ? '<div class="empty">Sin gastos este mes.</div>' : `
+        <div style="overflow-x:auto;"><table>
+          <thead><tr><th>Fecha</th><th>Concepto</th><th>Monto</th></tr></thead>
+          <tbody>${[...r.gastosMes].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(g=>`<tr><td>${g.fecha}</td><td>${g.concepto}</td><td class="num">${money(g.monto)}</td></tr>`).join('')}</tbody>
+        </table></div>`}
+      </div>
+    `;
+    requestAnimationFrame(()=> window.scrollTo(0, scrollVentanaAnterior));
+    document.getElementById('sel-mes-resumen').addEventListener('change', (e)=>{
+      mesResumenActual = e.target.value;
+      semanaResumenActual = null; // al cambiar de mes, vuelve a empezar en la Semana 1
+      renderResumen();
+    });
+
+    const selSemana = document.getElementById('sel-semana-resumen');
+    if(selSemana){
+      selSemana.addEventListener('change', (e)=>{
+        semanaResumenActual = e.target.value;
+        renderResumen();
+      });
+    }
+
+    document.getElementById('btn-descargar-pdf').addEventListener('click', ()=>{
+      generarPDF(mesResumenActual, r, totalesTipoMes, totalesClienteMes, prom);
+    });
+  }
+  function generarPDF(mesK, r, totalesTipoMes, totalesClienteMes, prom){
+    if(!window.jspdf){
+      alert('No se pudo cargar el generador de PDF. Revisa tu conexión a internet e inténtalo de nuevo.');
+      return;
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const rojo = [91,15,27];
+    const carbon = [58,9,17];
+    let y = 18;
+
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(18);
+    doc.setTextColor(...rojo);
+    doc.text('Control de Carnicería', 14, y);
+    y += 7;
+    doc.setFontSize(12);
+    doc.setTextColor(...carbon);
+    doc.text(`Resumen de ${mesLabel(mesK)}`, 14, y);
+    y += 10;
+
+    doc.setFontSize(10.5);
+    doc.setFont('helvetica','normal');
+    const resumenLineas = [
+      [`Ganancia bruta del mes:`, money(r.ganancia)],
+      [`Total vendido:`, `${fmt(r.librasVendidas)} lb`],
+      [`Ventas totales:`, money(r.ventasTotal)],
+      [`Gastos del mes:`, money(r.totalGastos)],
+      [`Ganancia neta:`, money(r.neto)],
+      [`Cobrado en efectivo:`, money(r.totalEfectivo)],
+      [`Cobrado por transferencia:`, money(r.totalTransferencia)],
+      [`Pendiente por cobrar:`, money(r.totalPendiente)],
+    ];
+    resumenLineas.forEach(([label,val])=>{
+      doc.setFont('helvetica','bold'); doc.text(label, 14, y);
+      doc.setFont('helvetica','normal'); doc.text(val, 90, y);
+      y += 6;
+    });
+    y += 4;
+
+    const tiposMes = Object.keys(totalesTipoMes);
+    if(tiposMes.length > 0){
+      doc.autoTable({
+        startY: y,
+        head: [['Tipo de carne','Libras vendidas']],
+        body: tiposMes.sort().map(t=>[t, `${fmt(totalesTipoMes[t])} lb`]),
+        theme:'grid', headStyles:{ fillColor: carbon }, styles:{ fontSize:9 }, margin:{left:14,right:14}
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+
+    const clientesMes = Object.keys(totalesClienteMes);
+    if(clientesMes.length > 0){
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('Total por cliente', 14, y); y += 2;
+      doc.autoTable({
+        startY: y + 4,
+        head: [['Cliente','Libras (todas las carnes)','Total venta','Pagado','Debe']],
+        body: clientesMes.sort().map(c=>{
+          const t = totalesClienteMes[c];
+          return [c, `${fmt(t.libras)} lb`, money(t.total), money(t.pagado), t.saldo>0.004?money(t.saldo):'—'];
+        }),
+        theme:'grid', headStyles:{ fillColor: rojo }, styles:{ fontSize:9 }, margin:{left:14,right:14}
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if(r.ventasMes.length > 0){
+      if(y > 250){ doc.addPage(); y = 18; }
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('Ventas por cliente (detalle)', 14, y); y += 2;
+      doc.autoTable({
+        startY: y + 4,
+        head: [['Fecha','Cliente','Carne','Libras','Total','Método','Estado']],
+        body: [...r.ventasMes].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(v=>{
+          const total = v.libras * v.precioLibra;
+          const estado = estadoVenta(v);
+          const saldo = Math.max(total - montoPagadoVenta(v), 0);
+          const estadoTxt = estado === 'pagado' ? 'Pagado' : estado === 'abono' ? `Abono (debe ${money(saldo)})` : 'Pendiente';
+          const metodo = (v.metodoPago||'efectivo') === 'transferencia' ? 'Transferencia' : 'Efectivo';
+          return [v.fecha, v.cliente, v.tipo, `${fmt(v.libras)} lb`, money(total), metodo, estadoTxt];
+        }),
+        theme:'grid', headStyles:{ fillColor: carbon }, styles:{ fontSize:8.5 }, margin:{left:14,right:14}
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if(r.comprasMes.length > 0){
+      if(y > 250){ doc.addPage(); y = 18; }
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('Compras', 14, y); y += 2;
+      doc.autoTable({
+        startY: y + 4,
+        head: [['Fecha','Carne','Libras','Costo total']],
+        body: [...r.comprasMes].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(c=>[c.fecha, c.tipo, `${fmt(c.libras)} lb`, money(c.libras*c.costoLibra)]),
+        theme:'grid', headStyles:{ fillColor: carbon }, styles:{ fontSize:8.5 }, margin:{left:14,right:14}
+      });
+      y = doc.lastAutoTable.finalY + 8;
+    }
+
+    if(r.gastosMes.length > 0){
+      if(y > 250){ doc.addPage(); y = 18; }
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.text('Gastos', 14, y); y += 2;
+      doc.autoTable({
+        startY: y + 4,
+        head: [['Fecha','Concepto','Monto']],
+        body: [...r.gastosMes].sort((a,b)=>a.fecha.localeCompare(b.fecha)).map(g=>[g.fecha, g.concepto, money(g.monto)]),
+        theme:'grid', headStyles:{ fillColor: rojo }, styles:{ fontSize:8.5 }, margin:{left:14,right:14}
+      });
+    }
+
+    doc.save(`carniceria-resumen-${mesK}.pdf`);
+  }
+  cargarDatos();
+})();
+</script></body></html>
