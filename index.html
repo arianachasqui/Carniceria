@@ -133,7 +133,7 @@ td{padding:12px 10px}th{padding:11px 10px}
   let compras=[],ventas=[],gastos=[],productos=[];
   let activeTab="ventas",mesResumenActual=null,semanaResumenActual=null,ventasVis=15,comprasVis=20;
   const root=document.getElementById('app-root');
-  const TABS=[['ventas','Ventas'],['deudores','Deudores'],['compras','Compras'],['inventario','Inventario'],['gastos','Gastos'],['resumen','Resumen'],['catalogo','Catálogo']];
+  const TABS=[['ventas','Ventas'],['deudores','Deudores'],['facturas','Facturas'],['compras','Compras'],['inventario','Inventario'],['gastos','Gastos'],['resumen','Resumen'],['catalogo','Catálogo']];
   const hoyStr=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
   const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
   const fmt=n=>(isNaN(n)?0:n).toLocaleString('es-CO',{maximumFractionDigits:2});
@@ -389,7 +389,7 @@ td{padding:12px 10px}th{padding:11px 10px}
       <nav class="tabs">${TABS.map(([k,l])=>`<div class="tab ${k===activeTab?'active':''}" data-tab="${k}">${l}${k==='deudores'&&nd?`<b>${nd}</b>`:''}</div>`).join('')}</nav>
       <div class="wrap">${TABS.map(([k])=>`<div id="panel-${k}" class="panel ${k===activeTab?'active':''}"></div>`).join('')}</div>`;
     root.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{activeTab=t.dataset.tab;render();window.scrollTo(0,0)});
-    renderVentas();renderDeudores();renderCompras();renderInventario();renderGastos();renderResumen();renderCatalogo();renderSheets();renderCompletar();renderInstalar();
+    renderVentas();renderDeudores();renderFacturas();renderCompras();renderInventario();renderGastos();renderResumen();renderCatalogo();renderSheets();renderCompletar();renderInstalar();
     const a=root.querySelector('.tab.active');if(a)a.scrollIntoView({inline:'center',block:'nearest'});
     window.scrollTo(0,y);
   }
@@ -470,6 +470,66 @@ td{padding:12px 10px}th{padding:11px 10px}
       else if(navigator.clipboard)navigator.clipboard.writeText(l).then(()=>toast('✓ Enlace copiado. Ábrelo en el celular'),()=>prompt('Copia este enlace:',l));else prompt('Copia este enlace:',l)};
     const b=p.querySelector('#shb');if(b)b.onclick=async()=>{if(!val())return;if(!confirm('Esto reemplaza los datos de este equipo con los de la hoja. ¿Continuar?'))return;try{const s=await shGet();if(!s.ok)throw new Error(s.error==='vacio'?'La hoja aún no tiene datos':'No se pudo leer la hoja');await aplicar(s.datos);fin(s.rev);toast('✓ Datos traídos');render()}catch(e){toast(e.message||'No se pudo conectar')}};
     const d=p.querySelector('#shd');if(d)d.onclick=()=>{sh={};shSave();try{localStorage.removeItem(KEY_BASE)}catch(e){}render()};
+  }
+
+  // ---------- Facturas mensuales por cliente ----------
+  let facMes=null;
+  const mesesFac=()=>[...new Set(ventas.map(v=>mesKey(v.fecha)).filter(Boolean))].sort().reverse();
+  function facturaDe(cli,mes){
+    const L=ventas.filter(v=>v.cliente===cli&&mesKey(v.fecha)===mes).sort((a,b)=>a.fecha.localeCompare(b.fecha));
+    const tot=L.reduce((s,v)=>s+v.libras*v.precioLibra,0),pag=L.reduce((s,v)=>s+montoPagadoVenta(v),0);
+    const ant=ventas.filter(v=>v.cliente===cli&&mesKey(v.fecha)<mes).reduce((s,v)=>s+Math.max(v.libras*v.precioLibra-montoPagadoVenta(v),0),0);
+    return{cli,mes,L,tot,pag,deb:Math.max(tot-pag,0),ant};
+  }
+  const estV=v=>{const t=v.libras*v.precioLibra,p=montoPagadoVenta(v);return p>=t-.004?'Pagó':p>.004?'Abonó '+money(p):'Debe'};
+  function renderFacturas(){
+    const p=document.getElementById('panel-facturas'),ms=mesesFac();if(!facMes||!ms.includes(facMes))facMes=ms[0]||null;
+    if(!facMes){p.innerHTML='<div class="card"><div class="empty">Aún no hay ventas para facturar.</div></div>';return}
+    const cls=[...new Set(ventas.filter(v=>mesKey(v.fecha)===facMes).map(v=>v.cliente))].map(c=>facturaDe(c,facMes)).sort((a,b)=>b.tot-a.tot);
+    const T=cls.reduce((s,f)=>s+f.tot,0),P=cls.reduce((s,f)=>s+f.pag,0);
+    p.innerHTML=`<div class="month-select"><label style="margin:0">Mes</label><select id="fm">${ms.map(m=>`<option value="${m}" ${m===facMes?'selected':''}>${mesLabel(m)}</option>`).join('')}</select></div>
+      <div class="stat-grid"><div class="stat"><div class="label">Pidieron</div><div class="val">${money(T)}</div></div><div class="stat verde"><div class="label">Pagaron</div><div class="val">${money(P)}</div></div><div class="stat oro"><div class="label">Deben</div><div class="val">${money(Math.max(T-P,0))}</div></div></div>
+      <div class="card"><h2>Facturas de ${mesLabel(facMes)}</h2><p class="helptext" style="margin:-6px 0 4px">Toca un cliente para ver su factura.</p>
+      ${cls.map(f=>`<div class="deuda" data-f="${esc(f.cli)}"><div><b>${esc(f.cli)}</b><span>${f.L.length} producto(s) · Pidió ${money(f.tot)}</span></div><div style="text-align:right"><span class="estado-tag ${f.deb<=.5?'pagado':f.pag>.5?'abono':'pendiente'}">${f.deb<=.5?'Pagó todo':'Debe '+money(f.deb)}</span></div></div>`).join('')}
+      <button class="btn oro full" id="fall">Descargar todas las facturas (PDF)</button></div>`;
+    p.querySelector('#fm').onchange=e=>{facMes=e.target.value;renderFacturas()};
+    p.querySelectorAll('[data-f]').forEach(e=>e.onclick=()=>factura(e.dataset.f));
+    p.querySelector('#fall').onclick=()=>{const d=pdfDoc(cls);if(d)d.save('Facturas-'+facMes+'.pdf')};
+  }
+  function factura(cli){
+    const f=facturaDe(cli,facMes);
+    const s=hoja(`<div class="hh"><h3>${esc(cli)}</h3><button class="x" data-c>✕</button></div><p class="helptext" style="margin:-8px 0 8px">Estado de cuenta · ${mesLabel(f.mes)}</p>
+      ${f.L.map(v=>`<div class="linea" style="cursor:default"><div class="t"><b>${fechaCorta(v.fecha)} · ${esc(v.tipo)}</b><span>${fmt(v.libras)} lb × ${money(v.precioLibra)} · ${estV(v)}</span></div><b class="m">${money(v.libras*v.precioLibra)}</b></div>`).join('')}
+      <div class="total" style="font-size:20px"><span>Pidió</span><span>${money(f.tot)}</span></div>
+      <div class="total" style="font-size:20px;padding-top:2px"><span>Pagó</span><span>${money(f.pag)}</span></div>
+      <div class="total"><span>Debe</span><span class="neg">${money(f.deb)}</span></div>
+      ${f.ant>.5?`<p class="helptext">Además debe ${money(f.ant)} de meses anteriores. Total por pagar: <b>${money(f.deb+f.ant)}</b></p>`:''}
+      <button class="btn oro full" id="fpdf">Descargar PDF</button><button class="btn secundario full" id="fwa">Enviar por WhatsApp</button>`);
+    s.querySelector('#fpdf').onclick=()=>{const d=pdfDoc([f]);if(d)d.save(nombreFac(f))};
+    s.querySelector('#fwa').onclick=async()=>{
+      const d=pdfDoc([f]);
+      if(d){try{const file=new File([d.output('blob')],nombreFac(f),{type:'application/pdf'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Factura '+f.cli});return}}catch(e){if(e&&e.name==='AbortError')return}}
+      const t='*Carnicos Nuevo Amanecer*\nEstado de cuenta · '+mesLabel(f.mes)+'\nCliente: '+f.cli+'\n\n'+f.L.map(v=>fechaCorta(v.fecha)+' · '+v.tipo+' '+fmt(v.libras)+' lb × '+money(v.precioLibra)+' = '+money(v.libras*v.precioLibra)).join('\n')+'\n\nPidió: '+money(f.tot)+'\nPagó: '+money(f.pag)+'\n*Debe: '+money(f.deb)+'*'+(f.ant>.5?'\nMeses anteriores: '+money(f.ant)+'\n*Total por pagar: '+money(f.deb+f.ant)+'*':'')+'\n\nGracias por su compra.';
+      window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+    };
+  }
+  const nombreFac=f=>'Factura-'+f.cli.replace(/[^A-Za-z0-9]+/g,'_')+'-'+f.mes+'.pdf';
+  function pdfDoc(lista){
+    if(!(window.jspdf&&window.jspdf.jsPDF)){toast('Conéctate a internet una vez para crear PDF');return null}
+    const doc=new window.jspdf.jsPDF();lista.forEach((f,i)=>{if(i)doc.addPage();dibujarFactura(doc,f)});return doc;
+  }
+  function dibujarFactura(doc,f){
+    const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+    doc.setFillColor(20,20,20);doc.rect(0,0,W,32,'F');doc.setFillColor(201,168,76);doc.rect(0,32,W,1.2,'F');
+    doc.setTextColor(232,210,154);doc.setFont('helvetica','bold');doc.setFontSize(19);doc.text('Carnicos Nuevo Amanecer',14,15);
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.text('Estado de cuenta · Factura mensual',14,24);doc.text(mesLabel(f.mes),W-14,24,{align:'right'});
+    doc.setTextColor(30,30,30);doc.setFont('helvetica','bold');doc.setFontSize(13);doc.text('Cliente: '+f.cli,14,45);
+    doc.autoTable({startY:51,head:[['Fecha','Producto','Libras','Precio/lb','Subtotal','Estado']],body:f.L.map(v=>[fechaCorta(v.fecha),v.tipo,fmt(v.libras),money(v.precioLibra),money(v.libras*v.precioLibra),estV(v)]),headStyles:{fillColor:[20,20,20],textColor:[232,210,154]},styles:{fontSize:9},columnStyles:{2:{halign:'right'},3:{halign:'right'},4:{halign:'right'}},alternateRowStyles:{fillColor:[247,244,236]}});
+    let y=doc.lastAutoTable.finalY+12;if(y>H-60){doc.addPage();y=22}
+    const fila=(t,v,b)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(b?13:11);doc.setTextColor(30,30,30);doc.text(t,W-104,y);doc.text(v,W-14,y,{align:'right'});y+=b?10:7};
+    fila('Total pedido',money(f.tot));fila('Pagado',money(f.pag));doc.setDrawColor(201,168,76);doc.line(W-106,y-4,W-14,y-4);fila('Debe',money(f.deb),true);
+    if(f.ant>.5){y+=2;fila('Saldo de meses anteriores',money(f.ant));fila('Total por pagar',money(f.deb+f.ant),true)}
+    doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(110,110,110);doc.text('Gracias por su compra.',14,H-12);
   }
 
   // ---------- Instalar ----------
