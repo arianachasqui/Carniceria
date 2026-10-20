@@ -394,48 +394,83 @@ td{padding:12px 10px}th{padding:11px 10px}
     window.scrollTo(0,y);
   }
 
-  // ---------- Google Sheets ----------
-  const KEY_SH="carniceria-sheets";
-  let sh=(()=>{try{return JSON.parse(localStorage.getItem(KEY_SH))||{}}catch(e){return{}}})(),shT=null,bajando=false;
+  // ---------- Google Sheets (sincronización entre dispositivos) ----------
+  const KEY_SH="carniceria-sheets",KEY_BASE="carniceria-sync-base",COLS=['compras','ventas','gastos','productos'];
+  let sh=(()=>{try{return JSON.parse(localStorage.getItem(KEY_SH))||{}}catch(e){return{}}})(),shT=null,bajando=false,sincr=false,pendRe=false;
   const shSave=()=>{try{localStorage.setItem(KEY_SH,JSON.stringify(sh))}catch(e){}};
-  function pedirSync(){if(!sh.url||!sh.ok||bajando)return;clearTimeout(shT);shT=setTimeout(()=>subir(),2500)}
-  async function subir(manual){
-    if(!sh.url)return;
-    try{
-      const r=await fetch(sh.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({clave:sh.clave||'',datos:{compras,ventas,gastos,productos:productos.map(({img,...r})=>r)}})});
-      const j=await r.json();if(!j.ok)throw new Error(j.error==='clave'?'La clave no coincide':(j.error||'Error en la hoja'));
-      sh.ok=true;sh.ultima=Date.now();sh.error=null;if(manual)toast('✓ Datos en Google Sheets');
-    }catch(e){
-      if(e instanceof TypeError&&navigator.onLine){sh.ok=true;sh.ultima=Date.now();sh.error=null;if(manual)toast('✓ Enviado a Google Sheets')}
-      else{sh.error=e instanceof TypeError?'Sin internet: se enviará al volver la conexión':e.message;if(manual)toast(sh.error)}
-    }
-    shSave();estadoSheets();
-  }
-  async function bajar(){
-    const j=await(await fetch(sh.url+(sh.url.includes('?')?'&':'?')+'clave='+encodeURIComponent(sh.clave||''))).json();
-    if(!j.ok||!j.datos)throw new Error(j.error==='clave'?'La clave no coincide':'La hoja aún no tiene datos');
-    const d=j.datos,im={};productos.forEach(p=>im[p.nombre]=p.img);bajando=true;
-    compras=d.compras||[];ventas=d.ventas||[];gastos=d.gastos||[];productos=(d.productos||productos).map(p=>({...p,img:im[p.nombre]||null}));
+  (function(){try{const q=new URLSearchParams(location.search),u=q.get('sheet');if(u&&/^https:\/\/script\.google\.com\//.test(u)){sh={url:u,clave:q.get('k')||''};shSave();history.replaceState(null,'',location.pathname)}}catch(e){}})();
+  const snap=()=>JSON.parse(JSON.stringify({compras,ventas,gastos,productos:productos.map(({img,...r})=>r)}));
+  const norm=s=>JSON.stringify(COLS.map(c=>(s[c]||[]).slice().sort((a,b)=>String(a.id).localeCompare(String(b.id)))));
+  function merge3(b,l,s){const out={};COLS.forEach(c=>{const B=new Map((b[c]||[]).map(x=>[x.id,JSON.stringify(x)])),L=new Map((l[c]||[]).map(x=>[x.id,x])),S=new Map((s[c]||[]).map(x=>[x.id,x])),r=[];
+    new Set([...L.keys(),...S.keys()]).forEach(id=>{const lo=L.get(id),so=S.get(id),bs=B.get(id);
+      if(lo&&so)r.push(JSON.stringify(lo)!==bs?lo:so);
+      else if(lo){if(bs===undefined||JSON.stringify(lo)!==bs)r.push(lo)}
+      else if(so&&bs===undefined)r.push(so)});out[c]=r});return out}
+  async function aplicar(d){
+    const im={};productos.forEach(p=>{im[p.id]=p.img;im[p.nombre]=p.img});bajando=true;
+    compras=d.compras||[];ventas=d.ventas||[];gastos=d.gastos||[];productos=(d.productos||productos).map(p=>({...p,img:im[p.id]||im[p.nombre]||null}));
     await guardarCompras();await guardarVentas();await guardarGastos();guardarProd();bajando=false;
-    sh.ok=true;sh.ultima=Date.now();sh.error=null;shSave();
+    if(!document.getElementById('sheet').classList.contains('on'))render();
   }
-  function estadoSheets(){const e=document.getElementById('sh-est');if(!e)return;e.textContent=!sh.url?'Sin conectar':sh.error?'⚠ '+sh.error:sh.ultima?'✓ Última sincronización: '+new Date(sh.ultima).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'}):'Conectado'}
+  const shGet=async()=>{for(let i=0;;i++){try{return await fetch(sh.url+(sh.url.includes('?')?'&':'?')+'clave='+encodeURIComponent(sh.clave||'')+'&_='+Date.now(),{cache:'no-store'}).then(r=>r.json())}catch(e){if(i>=2)throw e;await new Promise(r=>setTimeout(r,1500))}}};
+  const shPost=(datos,baseRev)=>fetch(sh.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({clave:sh.clave||'',baseRev,datos})}).then(r=>r.json());
+  function fin(rev){sh.rev=rev;sh.ok=true;sh.ultima=Date.now();sh.error=null;shSave();try{localStorage.setItem(KEY_BASE,JSON.stringify(snap()))}catch(e){}estadoSheets()}
+  async function sincronizar(manual){
+    if(!sh.url)return;if(sincr){pendRe=true;return}sincr=true;
+    try{
+      for(let n=0;n<3;n++){
+        const s=await shGet();
+        if(s.ok===false&&s.error==='clave')throw new Error('La clave no coincide');
+        const vacio=s.ok===false&&s.error==='vacio';
+        if(!vacio&&(!s.ok||typeof s.rev!=='number'))throw new Error('Falta actualizar el código Code.gs en Google');
+        const sv=vacio?null:s.datos,srev=vacio?0:s.rev,loc=snap();let base=null;try{base=JSON.parse(localStorage.getItem(KEY_BASE))}catch(e){}
+        let push=false,baseRev=srev;
+        if(!sv){push=true}
+        else if(!base){
+          if(sh.ok){push=true;baseRev=null}
+          else if(manual&&!confirm('La hoja ya tiene datos.\n\nAceptar = usar los datos de la hoja (reemplaza lo de este equipo).\nCancelar = subir los datos de este equipo a la hoja.')){push=true;baseRev=null}
+          else{await aplicar(sv);fin(srev);if(manual)toast('✓ Datos traídos de la hoja');return}
+        }else{
+          const lc=norm(loc)!==norm(base),sc=srev!==sh.rev;
+          if(!lc&&!sc){fin(srev);if(manual)toast('✓ Todo al día');return}
+          if(!lc&&sc){await aplicar(sv);fin(srev);if(manual)toast('✓ Datos actualizados');return}
+          if(lc&&sc)await aplicar(merge3(base,loc,sv));
+          push=true;
+        }
+        if(push){
+          await shPost(snap(),baseRev).catch(()=>null);
+          const g=await shGet();
+          if(g.ok&&norm(g.datos)===norm(snap())){fin(g.rev);if(manual)toast('✓ Sincronizado');return}
+        }
+      }
+      throw new Error('No se pudo sincronizar. Intenta de nuevo');
+    }catch(e){
+      console.warn('sync',e);
+      sh.error=(e instanceof TypeError)?'Sin conexión: se sincronizará al volver':e.message;shSave();estadoSheets();if(manual)toast(sh.error);
+    }finally{sincr=false;if(pendRe){pendRe=false;setTimeout(()=>sincronizar(),600)}}
+  }
+  function pedirSync(){if(!sh.url||bajando)return;clearTimeout(shT);shT=setTimeout(()=>sincronizar(),2500)}
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sincronizar()});
+  window.addEventListener('focus',()=>sincronizar());window.addEventListener('online',()=>sincronizar());
+  setInterval(()=>{if(!document.hidden)sincronizar()},45000);
+  function estadoSheets(){const e=document.getElementById('sh-est');if(!e)return;e.textContent=!sh.url?'Sin conectar':sh.error?'⚠ '+sh.error:sh.ultima?'✓ Sincronizado: '+new Date(sh.ultima).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'}):'Conectado'}
   function renderSheets(){
     const p=document.getElementById('panel-catalogo');
-    p.insertAdjacentHTML('beforeend',`<div class="card"><h2>Google Sheets</h2><p class="helptext">Cada venta, compra, gasto y deuda se copia sola a tu hoja de cálculo.</p>
+    p.insertAdjacentHTML('beforeend',`<div class="card"><h2>Google Sheets</h2><p class="helptext">Todos tus aparatos comparten los mismos datos: lo que anotes en uno aparece en el otro.</p>
       <label>Enlace de la aplicación web (Apps Script)</label><input id="shu" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(sh.url||'')}">
       <label>Clave (opcional)</label><input id="shk" value="${esc(sh.clave||'')}" autocomplete="off">
       <p class="helptext" id="sh-est" style="margin:12px 0 0"></p>
-      <button class="btn oro full" id="shs">${sh.url?'Guardar y subir datos ahora':'Conectar y subir mis datos'}</button>
-      <button class="btn secundario full" id="shb">Traer datos desde la hoja</button>
-      ${sh.url?'<button class="btn secundario full" id="shd">Desconectar</button>':''}</div>`);
+      <button class="btn oro full" id="shs">${sh.url?'Sincronizar ahora':'Conectar'}</button>
+      ${sh.url?'<button class="btn secundario full" id="shc">Enviar enlace para el celular</button><button class="btn secundario full" id="shb">Traer datos de la hoja (reemplaza este equipo)</button><button class="btn secundario full" id="shd">Desconectar</button>':''}</div>`);
     estadoSheets();
-    const val=()=>{sh.url=p.querySelector('#shu').value.trim();sh.clave=p.querySelector('#shk').value.trim();if(!/^https:\/\/script\.google\.com\//.test(sh.url)){toast('Pega el enlace que termina en /exec');return false}return true};
-    p.querySelector('#shs').onclick=async()=>{if(!val())return;toast('Enviando…');await subir(true);render()};
-    p.querySelector('#shb').onclick=async()=>{if(!val())return;if(!confirm('Esto reemplaza los datos de este teléfono con los de la hoja. ¿Continuar?'))return;try{toast('Descargando…');await bajar();toast('✓ Datos traídos');render()}catch(e){toast(e instanceof TypeError?'No se pudo conectar con la hoja':e.message)}};
-    const d=p.querySelector('#shd');if(d)d.onclick=()=>{sh={};shSave();render()};
+    const val=()=>{const u=p.querySelector('#shu').value.trim(),k=p.querySelector('#shk').value.trim();if(!/^https:\/\/script\.google\.com\//.test(u)){toast('Pega el enlace que termina en /exec');return false}if(u!==sh.url){delete sh.ok;delete sh.rev;try{localStorage.removeItem(KEY_BASE)}catch(e){}}sh.url=u;sh.clave=k;shSave();return true};
+    p.querySelector('#shs').onclick=async()=>{if(!val())return;toast('Sincronizando…');await sincronizar(true);render()};
+    const c=p.querySelector('#shc');if(c)c.onclick=()=>{const l=location.origin+location.pathname+'?sheet='+encodeURIComponent(sh.url)+'&k='+encodeURIComponent(sh.clave||'');
+      if(navigator.share)navigator.share({title:'Carnicos Nuevo Amanecer',text:'Abre este enlace en el celular para conectarlo',url:l}).catch(()=>{});
+      else if(navigator.clipboard)navigator.clipboard.writeText(l).then(()=>toast('✓ Enlace copiado. Ábrelo en el celular'),()=>prompt('Copia este enlace:',l));else prompt('Copia este enlace:',l)};
+    const b=p.querySelector('#shb');if(b)b.onclick=async()=>{if(!val())return;if(!confirm('Esto reemplaza los datos de este equipo con los de la hoja. ¿Continuar?'))return;try{const s=await shGet();if(!s.ok)throw new Error(s.error==='vacio'?'La hoja aún no tiene datos':'No se pudo leer la hoja');await aplicar(s.datos);fin(s.rev);toast('✓ Datos traídos');render()}catch(e){toast(e.message||'No se pudo conectar')}};
+    const d=p.querySelector('#shd');if(d)d.onclick=()=>{sh={};shSave();try{localStorage.removeItem(KEY_BASE)}catch(e){}render()};
   }
-  window.addEventListener('online',()=>{if(sh.url&&sh.error)subir()});
 
   // ---------- Instalar ----------
   let pwaEv=null;
@@ -2090,6 +2125,6 @@ td{padding:12px 10px}th{padding:11px 10px}
 
     doc.save(`carniceria-resumen-${mesK}.pdf`);
   }
-  cargarDatos();
+  cargarDatos().then(()=>sincronizar());
 })();
 </script></body></html>
