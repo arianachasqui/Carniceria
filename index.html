@@ -1948,6 +1948,15 @@ td{padding:12px 10px}th{padding:11px 10px}
       ? r.ventasMes.filter(v => semanaDeFecha(v.fecha).key === semanaResumenActual)
       : r.ventasMes;
 
+    // Diezmo: 10% de la ganancia bruta (del mes y de la semana elegida)
+    const esDz = g => /diezmo/i.test(g.concepto||'');
+    const dzMes = Math.max(r.ganancia,0)*0.1;
+    const dzPagMes = r.gastosMes.filter(esDz).reduce((s,g)=>s+g.monto,0);
+    const gSem = ventasSemana.reduce((s,v)=>s+gananciaVenta(v,prom),0);
+    const dzSem = Math.max(gSem,0)*0.1;
+    const dzPagSem = semanaResumenActual ? gastos.filter(g=>esDz(g)&&semanaDeFecha(g.fecha).key===semanaResumenActual).reduce((s,g)=>s+g.monto,0) : 0;
+    const dzSub = (dz,pg)=>'Apartado: '+money(pg)+' · '+(dz-pg>0.5?'Falta '+money(dz-pg):'Completo ✓');
+
     p.innerHTML = `
       <div class="card">
         <h2>Selecciona el mes</h2>
@@ -1969,6 +1978,16 @@ td{padding:12px 10px}th{padding:11px 10px}
             <div class="val">${money(r.neto)}</div>
           </div>
         </div>
+      </div>
+
+      <div class="card">
+        <h2>Diezmo (10%)</h2>
+        <div class="stat-grid">
+          <div class="stat oro"><div class="label">Diezmo del mes</div><div class="val">${money(dzMes)}</div><div class="label" style="margin-top:6px;">${dzSub(dzMes,dzPagMes)}</div></div>
+          <div class="stat oro"><div class="label">Diezmo de la semana</div><div class="val">${money(dzSem)}</div><div class="label" style="margin-top:6px;">${dzSub(dzSem,dzPagSem)}</div></div>
+        </div>
+        ${semanasDisponibles.length ? `<div class="month-select" style="margin-bottom:6px;"><select id="sel-semana-dz">${semanasDisponibles.map(k=>`<option value="${k}" ${k===semanaResumenActual?'selected':''}>Semana ${semanasInfo[k].semanaNum} · ${semanasInfo[k].rangoTexto}</option>`).join('')}</select></div>` : ''}
+        <p class="helptext">Es el 10% de la ganancia bruta (${money(r.ganancia)} en el mes). "Apartado" suma los gastos que anotaste como Diezmo.</p>
       </div>
 
       <div class="card">
@@ -2063,6 +2082,8 @@ td{padding:12px 10px}th{padding:11px 10px}
       renderResumen();
     });
 
+    const selDz = document.getElementById('sel-semana-dz');
+    if(selDz){ selDz.addEventListener('change', (ev)=>{ semanaResumenActual = ev.target.value; renderResumen(); }); }
     const selSemana = document.getElementById('sel-semana-resumen');
     if(selSemana){
       selSemana.addEventListener('change', (e)=>{
