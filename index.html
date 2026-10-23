@@ -395,11 +395,11 @@ td{padding:12px 10px}th{padding:11px 10px}
   }
 
   // ---------- Google Sheets (sincronización entre dispositivos) ----------
-  const KEY_SH="carniceria-sheets",KEY_BASE="carniceria-sync-base",COLS=['compras','ventas','gastos','productos'];
+  const KEY_SH="carniceria-sheets",KEY_BASE="carniceria-sync-base",COLS=['compras','ventas','gastos','productos','ajustes'];
   let sh=(()=>{try{return JSON.parse(localStorage.getItem(KEY_SH))||{}}catch(e){return{}}})(),shT=null,bajando=false,sincr=false,pendRe=false;
   const shSave=()=>{try{localStorage.setItem(KEY_SH,JSON.stringify(sh))}catch(e){}};
   (function(){try{const q=new URLSearchParams(location.search),u=q.get('sheet');if(u&&/^https:\/\/script\.google\.com\//.test(u)){sh={url:u,clave:q.get('k')||''};shSave();history.replaceState(null,'',location.pathname)}}catch(e){}})();
-  const snap=()=>JSON.parse(JSON.stringify({compras,ventas,gastos,productos:productos.map(({img,...r})=>r)}));
+  const snap=()=>JSON.parse(JSON.stringify({compras,ventas,gastos,productos:productos.map(({img,...r})=>r),ajustes}));
   const norm=s=>JSON.stringify(COLS.map(c=>(s[c]||[]).slice().sort((a,b)=>String(a.id).localeCompare(String(b.id)))));
   function merge3(b,l,s){const out={};COLS.forEach(c=>{const B=new Map((b[c]||[]).map(x=>[x.id,JSON.stringify(x)])),L=new Map((l[c]||[]).map(x=>[x.id,x])),S=new Map((s[c]||[]).map(x=>[x.id,x])),r=[];
     new Set([...L.keys(),...S.keys()]).forEach(id=>{const lo=L.get(id),so=S.get(id),bs=B.get(id);
@@ -409,7 +409,7 @@ td{padding:12px 10px}th{padding:11px 10px}
   async function aplicar(d){
     const im={};productos.forEach(p=>{im[p.id]=p.img;im[p.nombre]=p.img});bajando=true;
     compras=d.compras||[];ventas=d.ventas||[];gastos=d.gastos||[];productos=(d.productos||productos).map(p=>({...p,img:im[p.id]||im[p.nombre]||null}));
-    await guardarCompras();await guardarVentas();await guardarGastos();guardarProd();bajando=false;
+    await guardarCompras();await guardarVentas();await guardarGastos();guardarProd();if(d.ajustes){ajustes=d.ajustes;guardarAjustes()}bajando=false;
     if(!document.getElementById('sheet').classList.contains('on'))render();
   }
   const shGet=async()=>{for(let i=0;;i++){try{return await fetch(sh.url+(sh.url.includes('?')?'&':'?')+'clave='+encodeURIComponent(sh.clave||'')+'&_='+Date.now(),{cache:'no-store'}).then(r=>r.json())}catch(e){if(i>=2)throw e;await new Promise(r=>setTimeout(r,1500))}}};
@@ -532,6 +532,41 @@ td{padding:12px 10px}th{padding:11px 10px}
     doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(110,110,110);doc.text('Gracias por su compra.',14,H-12);
   }
 
+  // ---------- Inventario: punto de partida (desde ahí suma compras y resta ventas) ----------
+  const KEY_AJ="carniceria-ajustes-v1";let ajustes=[];try{ajustes=JSON.parse(localStorage.getItem(KEY_AJ)||'[]')}catch(e){}
+  function guardarAjustes(){try{localStorage.setItem(KEY_AJ,JSON.stringify(ajustes))}catch(e){}pedirSync()}
+  const baseInv=()=>ajustes.find(a=>a.id==='inv-base');
+  const tiposInv=()=>[...new Set([...productos.map(p=>p.nombre),...compras.map(c=>c.tipo),...ventas.map(v=>v.tipo),...Object.keys((baseInv()||{}).stock||{})])].sort();
+  function fijarBase(stock){const ig=[...compras.map(c=>c.id),...ventas.map(v=>v.id)];ajustes=ajustes.filter(a=>a.id!=='inv-base');ajustes.push({id:'inv-base',fecha:hoyStr(),stock,ignorar:ig});guardarAjustes()}
+  function aplicarInicial(){
+    const K="carniceria-inv-inicial-v1";try{if(localStorage.getItem(K))return;localStorage.setItem(K,"1")}catch(e){}
+    if(baseInv())return;
+    const ini={'CERDO':5,'LOMO DE CERDO':4.5,'COSTILLA DE RES':4,'ESPALDILLA':2,'BOLA':8.5,'COSTILLA AHUMADA':6,'CERDO AHUMADO':3.5},st={};
+    tiposInv().forEach(t=>{st[t]=ini[t]||0});fijarBase(st);
+  }
+  function inventarioPorTipo(){
+    const A=baseInv(),inv={};
+    if(!A){compras.forEach(c=>{inv[c.tipo]=(inv[c.tipo]||0)+c.libras});ventas.forEach(v=>{inv[v.tipo]=(inv[v.tipo]||0)-v.libras});return inv}
+    const ig=new Set(A.ignorar||[]);Object.keys(A.stock||{}).forEach(t=>{inv[t]=A.stock[t]});
+    compras.forEach(c=>{if(!ig.has(c.id))inv[c.tipo]=(inv[c.tipo]||0)+c.libras});
+    ventas.forEach(v=>{if(!ig.has(v.id))inv[v.tipo]=(inv[v.tipo]||0)-v.libras});
+    return inv;
+  }
+  function renderInventario(){
+    const p=document.getElementById('panel-inventario'),inv=inventarioPorTipo(),A=baseInv(),tipos=Object.keys(inv).sort();
+    p.innerHTML=`<div class="card"><h2>Inventario actual</h2>${tipos.length?`<div class="stat-grid">${tipos.map(t=>`<div class="stat ${inv[t]<-0.004?'rojo':''}"><div class="label">${esc(t)}</div><div class="val">${fmt(Math.round(inv[t]*100)/100)} lb</div></div>`).join('')}</div>`:'<div class="empty">Sin datos todavía.</div>'}
+      <div class="helptext">${A?'Inventario fijado el '+fechaCorta(A.fecha)+'. Desde entonces suma lo que compras y resta lo que vendes.':'Inventario = compras acumuladas − ventas acumuladas.'} Si algo no cuadra, toca Ajustar inventario. En rojo: se vendió más de lo que hay.</div>
+      <button class="btn oro full" id="inv-aj">Ajustar inventario</button></div>`;
+    p.querySelector('#inv-aj').onclick=ajustarInventario;
+  }
+  function ajustarInventario(){
+    const inv=inventarioPorTipo(),tipos=tiposInv();
+    const s=hoja(`<div class="hh"><h3>Ajustar inventario</h3><button class="x" data-c>✕</button></div><p class="helptext" style="margin:-6px 0 10px">Escribe cuántas libras tienes ahora de cada carne. Desde hoy se suma lo que compres y se resta lo que vendas.</p>
+      ${tipos.map((t,i)=>`<div class="el" style="grid-template-columns:1fr 100px"><b style="font:600 17px var(--font)">${esc(t)}</b><input data-i="${i}" type="number" inputmode="decimal" step="0.5" value="${Math.round((inv[t]||0)*100)/100}"></div>`).join('')}
+      <button class="btn oro full" id="ig">Guardar inventario</button>`);
+    s.querySelector('#ig').onclick=()=>{const st={};s.querySelectorAll('[data-i]').forEach(e=>{st[tipos[e.dataset.i]]=num(e.value)});fijarBase(st);toast('✓ Inventario guardado');cerrar()};
+  }
+
   // ---------- Instalar ----------
   let pwaEv=null;
   window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();pwaEv=e});
@@ -553,11 +588,13 @@ td{padding:12px 10px}th{padding:11px 10px}
   // ---------- Restaurar datos del archivo (hasta el 10 de octubre) ----------
   async function restaurarArchivo(){
     const H="2026-10-10",nm=t=>String(t).trim().toUpperCase();
+    const inv0=baseInv()?inventarioPorTipo():null;
     try{localStorage.setItem("carniceria-copia-antes-restaurar",JSON.stringify({fecha:Date.now(),compras,ventas,gastos}))}catch(e){}
     ventas=SYNC_VENTAS.map(r=>{const o={id:uid(),fecha:r[0],cliente:r[1],tipo:r[2],libras:r[3],precioLibra:r[4],metodoPago:r[5],pagado:!!r[6]};if(!r[6])o.montoPagado=0;return o}).concat(ventas.filter(v=>v.fecha&&v.fecha>H));
     compras=SYNC_COMPRAS.map(r=>({id:uid(),fecha:r[0],tipo:r[1],libras:r[2],costoLibra:r[3]})).concat(compras.filter(c=>c.fecha&&c.fecha>H));
     gastos=SYNC_GASTOS.map(r=>({id:uid(),fecha:r[0],concepto:r[1],monto:r[2]})).concat(gastos.filter(g=>g.fecha&&g.fecha>H));
     await guardarVentas();await guardarCompras();await guardarGastos();
+    if(inv0)fijarBase(inv0);
     const ult=(l,t)=>[...l].filter(x=>nm(x.tipo)===t).sort((a,b)=>a.fecha.localeCompare(b.fecha)).pop();let ag=false;
     [...new Set([...ventas,...compras].map(x=>nm(x.tipo)))].forEach(t=>{if(productos.some(p=>nm(p.nombre)===t))return;const lv=ult(ventas,t),lc=ult(compras,t);productos.push({id:uid(),img:null,nombre:t,precio:lv?lv.precioLibra:0,costo:lc?lc.costoLibra:0});ag=true});
     if(ag){productos.sort((a,b)=>a.nombre.localeCompare(b.nombre));guardarProd()}
@@ -1366,6 +1403,7 @@ td{padding:12px 10px}th{padding:11px 10px}
     await agregarGastosOctubre();
     await iniciarProductos();
     await autoCompletar();
+    aplicarInicial();
     render();
   }
 
@@ -1742,14 +1780,6 @@ td{padding:12px 10px}th{padding:11px 10px}
     return prom;
   }
 
-  function inventarioPorTipo(){
-    const prom = costoPromedioPorTipo();
-    const inv = {};
-    compras.forEach(c=>{ inv[c.tipo] = (inv[c.tipo]||0) + c.libras; });
-    ventas.forEach(v=>{ inv[v.tipo] = (inv[v.tipo]||0) - v.libras; if(!(v.tipo in prom)) prom[v.tipo] = 0; });
-    return inv;
-  }
-
   function gananciaVenta(v, prom){
     const costo = (prom && (v.tipo in prom)) ? prom[v.tipo] : 0;
     return v.libras * (v.precioLibra - costo);
@@ -1897,27 +1927,6 @@ td{padding:12px 10px}th{padding:11px 10px}
   }
 
   // ---------- Panel Inventario ----------
-  function renderInventario(){
-    const p = document.getElementById('panel-inventario');
-    const inv = inventarioPorTipo();
-    const tipos = Object.keys(inv);
-    p.innerHTML = `
-      <div class="card">
-        <h2>Inventario actual (libras disponibles por tipo)</h2>
-        ${tipos.length===0 ? '<div class="empty">Sin datos todavía.</div>' : `
-        <div class="stat-grid">
-          ${tipos.sort().map(t=>`
-            <div class="stat ${inv[t]<0 ? 'rojo':''}">
-              <div class="label">${t}</div>
-              <div class="val">${fmt(inv[t])} lb</div>
-            </div>`).join('')}
-        </div>
-        <div class="helptext">Inventario = libras compradas acumuladas − libras vendidas acumuladas, por tipo de carne. Negativo significa que se vendió más de lo que aparece comprado.</div>
-        `}
-      </div>
-    `;
-  }
-
   // ---------- Panel Resumen Mensual ----------
   function renderResumen(){
     const p = document.getElementById('panel-resumen');
